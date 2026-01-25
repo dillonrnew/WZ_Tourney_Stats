@@ -1,0 +1,84 @@
+.leaderboard-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.leaderboard-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 1700px; /* 🔥 adjust freely */
+  width: 100%;
+}
+
+.leaderboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Shared row layout */
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 48px 42px 1fr 60px;
+  align-items: center;
+  padding: 12px 16px;
+  background: #1f2327;
+  border-radius: 8px;
+  color: #ecf0f1;
+}
+
+/* Header row */
+.leaderboard-header {
+  background: transparent;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2a2f33;
+}
+
+.header-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9aa4ad;
+}
+
+.header-team {
+  text-align: left;
+}
+.header-score {
+  text-align: right;
+}
+/* Team image */
+.team-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* Placement */
+.team-placement {
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Team info */
+.team-info {
+  text-align: left;
+}
+
+.team-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.team-players {
+  font-size: 12px;
+  color: #bdc3c7;
+}
+
+/* Score */
+.team-score {
+  text-align: right;
+  font-weight: 700;
+}

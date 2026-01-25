@@ -1,0 +1,140 @@
+.team-container {
+  padding: 40px 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.team-container h1 {
+  text-align: center;
+  margin-bottom: 30px !important;
+  margin-top: 0;
+  color: #ecf0f1;
+}
+
+.teams-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.team-button {
+  background-color: #2f3439;
+  color: #ecf0f1;
+  border: 2px solid #3a3f45;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.team-button:hover {
+  background-color: #343a40;
+  transform: scale(1.05);
+}
+
+.team-button.active {
+  background-color: #3a3f45;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(58, 63, 69, 0.4);
+}
+
+.players-container {
+  margin-top: 40px;
+}
+
+.players-container h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #ecf0f1;
+}
+
+.no-team-selected {
+  text-align: center;
+  color: #bdc3c7;
+  font-size: 18px;
+  margin-top: 40px;
+}
+
+.players-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: -30px;
+  padding: 0 20px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.player-card {
+  width: 300px;
+  margin: 0 -30px;
+  position: relative;
+  z-index: 1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.player-card:first-child {
+  margin-left: 0;
+  z-index: 1;
+}
+
+.player-card:nth-child(2) {
+  z-index: 3;
+}
+
+.player-card:last-child {
+  margin-right: 0;
+  z-index: 2;
+}
+
+.player-card img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.player-card p {
+  text-align: center;
+  color: #ecf0f1;
+  margin: 0;
+  font-weight: 600;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .team-container {
+    padding: 20px 10px;
+  }
+
+  .teams-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .team-button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .players-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    padding: 0 10px;
+  }
+}
