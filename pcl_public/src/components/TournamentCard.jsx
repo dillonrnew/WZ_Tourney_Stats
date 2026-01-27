@@ -30,7 +30,7 @@ function TournamentCard({ tournament, items }) {
       role="button"
     >
       <div className="card-header-image">
-        <img src={tournament.image || ''} alt={tournament.name} />
+        <img src={tournament.image || ''} alt="" />
         <div className="card-overlay"></div>
 
         <div className="card-header-content">

@@ -60,20 +60,19 @@
   opacity: 0.9;
 }
 
-/* Avatar image */
-.PlayerStatsPage__avatar {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  border-radius: 50%;
+/* Player picture */
+.PlayerStatsPage_PlayerPics {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
   object-fit: cover;
   display: block;
 }
 
-/* Secondary image (badge / flag / team icon) */
-.PlayerStatsPage__badge {
-  width: 28px;
-  height: 28px;
+/* Org / Team logo */
+.PlayerStatsPage_OrgLogos {
+  width: 50px;
+  height: 50px;
   min-width: 28px;
   object-fit: contain;
   display: block;
@@ -114,18 +113,15 @@
 }
 
 .PlayerStatsPage__card--rank1 {
-  border: 3px solid gold;
-  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45);
+  border: 2px solid gold;
 }
 
 .PlayerStatsPage__card--rank2 {
-  border: 3px solid silver;
-  box-shadow: 0 0 14px rgba(192, 192, 192, 0.35);
+  border: 2px solid silver;
 }
 
 .PlayerStatsPage__card--rank3 {
-  border: 3px solid #cd7f32;
-  box-shadow: 0 0 12px rgba(205, 127, 50, 0.35);
+  border: 2px solid #cd7f32;
 }
 
 .PlayerStatsPage__card--rank4 {

@@ -3,9 +3,8 @@ import TournamentPage from './pages/TournamentsPage'
 import About from './pages/About'
 import Services from './pages/Services'
 import Team from './pages/AboutTheTeams'
-import Contact from './pages/Contact'
+import Stats from './pages/Stats'
 import Tournament from './pages/Tournament'
-import reactLogo from './assets/pullzecheck.png'
 import './App.css'
 import './styles/TournamentPage.css'
 
@@ -23,7 +22,6 @@ function App() {
       <div className="app-layout">
         <aside className="sidebar">
           <div className="sidebar-logo">
-            <img src={reactLogo} alt="Logo" className="logo-img" />
           </div>
 
           <nav className="sidebar-nav">
@@ -53,7 +51,7 @@ function App() {
             <Route path="/tournaments" element={<TournamentPage />} />
             <Route path="/player-stats" element={<About />} />
             <Route path="/leaderboards" element={<Services />} />
-            <Route path="/stats" element={<Contact />} />
+            <Route path="/stats" element={<Stats />} />
             <Route path="/teams" element={<Team />} />
             <Route path="/tournament/:id" element={<Tournament />} />
           </Routes>

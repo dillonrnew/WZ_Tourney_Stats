@@ -22,7 +22,7 @@
   font-weight: 700;
   color: #ecf0f1;
   margin-right: 15px; /* slightly more spacing */
-  width: 90px; /* slightly wider for the map label */
+  width: 40px; /* slightly wider for the map label */
   flex-shrink: 0;
   text-align: center;
   font-size: 1.1rem; /* slightly bigger text */
@@ -30,17 +30,14 @@
 
 .map-images {
   position: relative;
-  width: 90px; /* more room for overlapping */
-  height: 60px; /* taller images */
+  width: 180px; /* more room for overlapping */
+  height: 90px; /* taller images */
   margin-right: 25px;
   flex-shrink: 0;
 }
 
 .map-image {
-  width: 60px; /* slightly bigger square images */
-  height: 60px;
-  border-radius: 6px;
-  border: 2px solid #000;
+  height: 90px;
   object-fit: cover;
   position: absolute;
   top: 0;
@@ -53,12 +50,12 @@
 }
 
 .map-image:nth-child(2) {
-  left: 20px; /* slightly more offset for overlapping */
+  left: 50px; /* slightly more offset for overlapping */
   z-index: 3;
 }
 
 .map-image:nth-child(3) {
-  left: 40px;
+  left: 100px;
   z-index: 2;
 }
 
@@ -68,6 +65,7 @@
   justify-content: center;
   flex: 1;
   color: #ecf0f1;
+  text-align: left;
 }
 
 .team-name {

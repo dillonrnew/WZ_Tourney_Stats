@@ -200,7 +200,7 @@ function Team() {
                       imageCacheRef.current[player.name] ||
                       getPlayerImage(player.name)
                     }
-                    alt={player.name}
+                    alt=""
                     onError={(e) => {
                       e.target.src = DEFAULT_IMAGE
                     }}

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import "../styles/TeamStatsPage.css";
+import "../styles/TournamentTeamStats.css";
 
 /**
  * Demo data:
@@ -7,21 +7,21 @@ import "../styles/TeamStatsPage.css";
  * - teamId is the key that links the same team across both columns
  */
 const teams = [
-  { teamId: "t1", name: "TEAM OMEGA", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t2", name: "TEAM NOVA", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t3", name: "TEAM PULSE", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t4", name: "TEAM APEX", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t5", name: "TEAM FURY", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t6", name: "TEAM SYNC", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t7", name: "TEAM ZEN", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t8", name: "TEAM VIBE", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t9", name: "TEAM LOCK", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t10", name: "TEAM VOID", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t11", name: "TEAM CORE", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t12", name: "TEAM IRON", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t13", name: "TEAM FLUX", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t14", name: "TEAM WAVE", avatar: "https://via.placeholder.com/96" },
-  { teamId: "t15", name: "TEAM NEXUS", avatar: "https://via.placeholder.com/96" },
+  { teamId: "t1", name: "TEAM OMEGA", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/AG%20GLOBAL.png" },
+  { teamId: "t2", name: "TEAM NOVA", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/EKLETYC.png" },
+  { teamId: "t3", name: "TEAM PULSE", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/ESC.png" },
+  { teamId: "t4", name: "TEAM APEX", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/GEN.G.png" },
+  { teamId: "t5", name: "TEAM FURY", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/GENTLE MATES.png" },
+  { teamId: "t6", name: "TEAM SYNC", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/LFAO.png" },
+  { teamId: "t7", name: "TEAM ZEN", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png" },
+  { teamId: "t8", name: "TEAM VIBE", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/ORGLESS.png" },
+  { teamId: "t9", name: "TEAM LOCK", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/ROC ESPORTS.png" },
+  { teamId: "t10", name: "TEAM VOID", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/RVX.png" },
+  { teamId: "t11", name: "TEAM CORE", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/T1.png" },
+  { teamId: "t12", name: "TEAM IRON", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/TEAM BAKA.png" },
+  { teamId: "t13", name: "TEAM FLUX", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/TEAM HISOKA.png" },
+  { teamId: "t14", name: "TEAM WAVE", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/WZPD.png" },
+  { teamId: "t15", name: "TEAM NEXUS", avatar: "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NINJAS IN PYJAMAS.png" },
 ];
 
 // Column 1 (Team Kills)
@@ -101,7 +101,7 @@ function TeamStats() {
                 <img
                   className="TeamStatsPage__avatar"
                   src={team?.avatar}
-                  alt={`${team?.name || "Team"} logo`}
+                  alt=""
                 />
 
                 <div className="TeamStatsPage__name">{team?.name || "Unknown"}</div>

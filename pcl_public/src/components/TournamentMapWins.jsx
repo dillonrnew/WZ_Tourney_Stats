@@ -1,114 +1,85 @@
 import '../styles/TournamentMapWins.css'
 
+const BASE_IMAGE_URL =
+  'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures'
+
+const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
+
 function TournamentMapWins() {
   const mapsData = [
-  {
-    mapNumber: 1,
-    images: [
-      'https://via.placeholder.com/36x36?text=A',
-      'https://via.placeholder.com/36x36?text=B',
-      'https://via.placeholder.com/36x36?text=C',
-    ],
-    teamName: 'GEN.G',
-    players: ['AYDAN', 'RATED', 'LENUN'],
-    kills: 34,
-  },
-  {
-    mapNumber: 2,
-    images: [
-      'https://via.placeholder.com/36x36?text=D',
-      'https://via.placeholder.com/36x36?text=E',
-      'https://via.placeholder.com/36x36?text=F',
-    ],
-    teamName: 'AG GLOBAL',
-    players: ['FIFAKILL', 'OEKIY', 'SCUMMN'],
-    kills: 27,
-  },
-  {
-    mapNumber: 3,
-    images: [
-      'https://via.placeholder.com/36x36?text=G',
-      'https://via.placeholder.com/36x36?text=H',
-      'https://via.placeholder.com/36x36?text=I',
-    ],
-    teamName: 'LFAO',
-    players: ['PLAYER1', 'PLAYER2', 'PLAYER3'],
-    kills: 22,
-  },
-  {
-    mapNumber: 4,
-    images: [
-      'https://via.placeholder.com/36x36?text=J',
-      'https://via.placeholder.com/36x36?text=K',
-      'https://via.placeholder.com/36x36?text=L',
-    ],
-    teamName: 'WZPD',
-    players: ['ALPHA', 'BRAVO', 'CHARLIE'],
-    kills: 19,
-  },
-  {
-    mapNumber: 5,
-    images: [
-      'https://via.placeholder.com/36x36?text=M',
-      'https://via.placeholder.com/36x36?text=N',
-      'https://via.placeholder.com/36x36?text=O',
-    ],
-    teamName: 'T1',
-    players: ['DELTA', 'ECHO', 'FOXTROT'],
-    kills: 25,
-  },
-  {
-    mapNumber: 6,
-    images: [
-      'https://via.placeholder.com/36x36?text=P',
-      'https://via.placeholder.com/36x36?text=Q',
-      'https://via.placeholder.com/36x36?text=R',
-    ],
-    teamName: 'NIP',
-    players: ['GAMMA', 'HOTEL', 'INDIA'],
-    kills: 30,
-  },
-  {
-    mapNumber: 7,
-    images: [
-      'https://via.placeholder.com/36x36?text=S',
-      'https://via.placeholder.com/36x36?text=T',
-      'https://via.placeholder.com/36x36?text=U',
-    ],
-    teamName: 'SVGE',
-    players: ['JULIET', 'KILO', 'LIMA'],
-    kills: 28,
-  },
-  {
-    mapNumber: 8,
-    images: [
-      'https://via.placeholder.com/36x36?text=V',
-      'https://via.placeholder.com/36x36?text=W',
-      'https://via.placeholder.com/36x36?text=X',
-    ],
-    teamName: 'ESC',
-    players: ['MIKE', 'NOVEMBER', 'OSCAR'],
-    kills: 21,
-  },
-];
-
+    {
+      mapNumber: 1,
+      teamName: 'GEN.G',
+      players: ['AYDAN', 'RATED', 'LENUN'],
+      kills: 34,
+    },
+    {
+      mapNumber: 2,
+      teamName: 'AG GLOBAL',
+      players: ['FIFAKILL', 'OEKIY', 'SCUMMN'],
+      kills: 27,
+    },
+    {
+      mapNumber: 3,
+      teamName: 'LFAO',
+      players: ['PLAYER1', 'PLAYER2', 'PLAYER3'],
+      kills: 22,
+    },
+    {
+      mapNumber: 4,
+      teamName: 'WZPD',
+      players: ['ALPHA', 'BRAVO', 'CHARLIE'],
+      kills: 19,
+    },
+    {
+      mapNumber: 5,
+      teamName: 'T1',
+      players: ['DELTA', 'ECHO', 'FOXTROT'],
+      kills: 25,
+    },
+    {
+      mapNumber: 6,
+      teamName: 'NIP',
+      players: ['GAMMA', 'HOTEL', 'INDIA'],
+      kills: 30,
+    },
+    {
+      mapNumber: 7,
+      teamName: 'SVGE',
+      players: ['JULIET', 'KILO', 'LIMA'],
+      kills: 28,
+    },
+    {
+      mapNumber: 8,
+      teamName: 'ESC',
+      players: ['MIKE', 'NOVEMBER', 'OSCAR'],
+      kills: 21,
+    },
+  ]
 
   return (
     <div className="map-wins-container">
-      {mapsData.map((map, idx) => (
-        <div key={idx} className="map-row">
+      {mapsData.map((map) => (
+        <div key={map.mapNumber} className="map-row">
           <div className="map-label">Map {map.mapNumber}</div>
 
           <div className="map-images">
-            {map.images.slice(0, 3).map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt={`player-${i}`}
-                className="map-image"
-                style={{ left: `${i * 18}px` }}
-              />
-            ))}
+            {map.players.slice(0, 3).map((player) => {
+              const playerImage = `${BASE_IMAGE_URL}/${player}.png`
+
+              return (
+                <img
+                  key={player}
+                  src={playerImage}
+                  alt=""
+                  className="map-image"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = DEFAULT_IMAGE
+                  }}
+                />
+              )
+            })}
           </div>
 
           <div className="map-team-info">
