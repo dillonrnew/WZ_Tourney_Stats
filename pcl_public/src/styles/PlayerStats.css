@@ -1,0 +1,137 @@
+/* =========================
+   PLAYER STATS PAGE ROOT
+   ========================= */
+.PlayerStatsPage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Page title */
+.PlayerStatsPage__title {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Vertical list container */
+.PlayerStatsPage__list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* =========================
+   PLAYER CARD
+   ========================= */
+.PlayerStatsPage__card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  /* Wide rectangle feel */
+  height: 72px;
+  padding: 0 20px;
+
+  /* Fixed width for ALL cards */
+  width: min(720px, 92vw);
+
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  color: #fff;
+
+  box-sizing: border-box;
+
+  transition:
+    box-shadow 0.2s ease,
+    border 0.2s ease;
+}
+
+/* Rank number (far left) */
+.PlayerStatsPage__rank {
+  width: 36px;
+  min-width: 36px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Avatar image */
+.PlayerStatsPage__avatar {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Secondary image (badge / flag / team icon) */
+.PlayerStatsPage__badge {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Player name */
+.PlayerStatsPage__name {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Stat value (far right) */
+.PlayerStatsPage__value {
+  min-width: 56px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* =========================
+   LEADER HIGHLIGHT (TOP 5)
+   No scaling — widths stay identical
+   ========================= */
+.PlayerStatsPage__card--rank1,
+.PlayerStatsPage__card--rank2,
+.PlayerStatsPage__card--rank3,
+.PlayerStatsPage__card--rank4,
+.PlayerStatsPage__card--rank5 {
+  height: 78px;
+}
+
+.PlayerStatsPage__card--rank1 {
+  border: 3px solid gold;
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45);
+}
+
+.PlayerStatsPage__card--rank2 {
+  border: 3px solid silver;
+  box-shadow: 0 0 14px rgba(192, 192, 192, 0.35);
+}
+
+.PlayerStatsPage__card--rank3 {
+  border: 3px solid #cd7f32;
+  box-shadow: 0 0 12px rgba(205, 127, 50, 0.35);
+}
+
+.PlayerStatsPage__card--rank4 {
+  border: 2px solid #555;
+}
+
+.PlayerStatsPage__card--rank5 {
+  border: 2px solid #444;
+}
