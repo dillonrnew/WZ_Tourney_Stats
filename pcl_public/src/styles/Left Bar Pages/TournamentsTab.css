@@ -1,0 +1,256 @@
+/* ============ PAGE WRAPPER ============ */
+.home {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px 24px 60px;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ============ SECTION ============ */
+.home-section {
+  max-width: 1200px;
+  margin: 0 auto 42px;
+}
+
+.home-section__header {
+  margin-bottom: 18px;
+}
+
+/* Header row with anchored link */
+.home-section__header--row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  position: relative; /* anchor context */
+  padding-bottom: 4px;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Titles */
+.home-section__title {
+  font-size: 28px;
+  margin: 0 0 6px;
+  letter-spacing: 0.5px;
+}
+
+.home-section__subtitle {
+  margin: 0;
+  color: #b8b8b8;
+  font-size: 14px;
+}
+
+/* Anchored link */
+.home-link {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+
+  white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  opacity: 0.9;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding-bottom: 2px;
+}
+
+.home-link:hover {
+  opacity: 1;
+  border-bottom-color: rgba(255, 255, 255, 0.55);
+}
+
+/* ============ MAJOR TOURNAMENTS GRID ============ */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+@media (max-width: 1020px) {
+  .home-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 680px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============ TOURNAMENT CARD ============ */
+.t-card {
+  background: rgba(18, 18, 18, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.35);
+}
+
+.t-card__header {
+  display: flex;
+  gap: 14px;
+  padding: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.t-card__header:hover {
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-1px);
+}
+
+.t-card__img {
+  width: 120px;
+  height: 76px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto;
+}
+
+.t-card__titleWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.t-card__title {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.t-card__hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #b8b8b8;
+}
+
+/* Items below card */
+.t-card__items {
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.t-card__empty {
+  margin: 0;
+  font-size: 13px;
+  color: #9a9a9a;
+}
+
+.t-card__item {
+  padding: 10px 8px;
+  border-radius: 10px;
+}
+
+.t-card__item + .t-card__item {
+  margin-top: 6px;
+}
+
+.t-card__item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.t-card__itemLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============ SCRIMS GRID ============ */
+.scrims-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .scrims-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.scrim-card {
+  background: rgba(16, 16, 16, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
+}
+
+.scrim-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.scrim-card__title {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.scrim-card__badge {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.scrim-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scrim-card__time {
+  font-size: 12px;
+  color: #b8b8b8;
+}
+
+.scrim-card__btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.scrim-card__btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}

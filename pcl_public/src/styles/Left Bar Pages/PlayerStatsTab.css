@@ -1,0 +1,241 @@
+.PlayerStatsTab {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* =========================
+   PLAYER STATS Tab ROOT
+   ========================= */
+.PlayerStatsTab {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 24px 16px;
+  box-sizing: border-box;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+    background-image:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+.PlayerStatsTab__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.PlayerStatsTab__title {
+  margin: 0 0 14px;
+  font-size: 30px;
+  letter-spacing: 1px;
+}
+
+/* SEARCH */
+.PlayerStatsTab__search {
+  width: 260px;
+  max-width: 90vw;
+  padding: 10px 14px;
+
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+
+  outline: none;
+}
+
+.PlayerStatsTab__search::placeholder {
+  color: #777;
+}
+
+/* =========================
+   3 COLUMN SPLIT
+   ========================= */
+.PlayerStatsTab__split {
+  width: 100%;
+  flex: 1;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* each column */
+.PlayerStatsTab__col {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 12px 18px;
+  box-sizing: border-box;
+}
+
+/* inner wrapper */
+.PlayerStatsTab__colInner {
+  width: 100%;
+  max-width: 520px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* column title */
+.PlayerStatsTab__columnTitle {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* list */
+.PlayerStatsTab__list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =========================
+   PLAYER CARD
+   ========================= */
+.PlayerStatsTab__card {
+  width: 100%;
+  max-width: 520px;
+  height: 76px;
+
+  padding: 0 18px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: linear-gradient(180deg, #141414, #0e0e0e);
+  border: 1px solid #333;
+  border-radius: 14px;
+
+  transition:
+    background 0.18s ease,
+    border 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* hover */
+.PlayerStatsTab__card:hover {
+  background: #151515;
+  border-color: #444;
+}
+
+/* =========================
+   RANK
+   ========================= */
+.PlayerStatsTab__rank {
+  width: 34px;
+  min-width: 34px;
+  text-align: center;
+
+  font-size: 18px;
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+/* =========================
+   PLAYER HEADSHOT
+   ========================= */
+.PlayerStatsTab__headshot {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================
+   ORG LOGO
+   ========================= */
+.PlayerStatsTab__orgLogo {
+  width: 50px;
+  height: 50px;
+  min-width: 28px;
+  object-fit: contain;
+  display: block;
+}
+
+/* =========================
+   PLAYER NAME
+   ========================= */
+.PlayerStatsTab__name {
+  flex: 1;
+  min-width: 0;
+
+  text-align: left;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: 0.4px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   VALUE
+   ========================= */
+.PlayerStatsTab__value {
+  min-width: 56px;
+  text-align: right;
+
+  font-size: 20px;
+  font-weight: 850;
+  color: #f5c56b;
+}
+
+/* =========================
+   TOP 5 HIGHLIGHT
+   ========================= */
+.PlayerStatsTab__card--rank1 {
+  border: 2px solid gold;
+}
+
+.PlayerStatsTab__card--rank2 {
+  border: 2px solid silver;
+}
+
+.PlayerStatsTab__card--rank3 {
+  border: 2px solid #cd7f32;
+}
+
+.PlayerStatsTab__card--rank4 {
+  border: 2px solid #555;
+}
+
+.PlayerStatsTab__card--rank5 {
+  border: 2px solid #444;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 1200px) {
+  .PlayerStatsTab__split {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .PlayerStatsTab__colInner,
+  .PlayerStatsTab__card {
+    max-width: 720px;
+  }
+}

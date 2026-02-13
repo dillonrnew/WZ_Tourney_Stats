@@ -1,11 +1,58 @@
 .map-wins-container {
   display: flex;
   flex-direction: column; /* stack all maps vertically */
-  gap: 30px; /* slightly bigger gap between rows */
+  gap: 12px;
   width: 100%;
   padding: 30px; /* a bit more padding */
   align-items: center;
   min-height: 100vh;      /* full screen vertically */
+}
+
+.map-table-header {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 15px;
+}
+
+.map-header-spacer {
+  flex-shrink: 0;
+}
+
+.map-header-map {
+  width: 55px; /* map label width + margin-right */
+}
+
+.map-header-images {
+  width: 205px; /* image block width + margin-right */
+}
+
+.map-header-team,
+.map-header-kills {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9aa3ab;
+}
+
+.map-header-team {
+  flex: 1;
+  text-align: left;
+}
+
+.map-header-kills {
+  width: 60px;
+  margin-left: 25px;
+  text-align: center;
+}
+
+.map-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* slightly bigger gap between rows */
+  width: 100%;
+  align-items: center;
 }
 
 .map-row {
@@ -13,7 +60,7 @@
   align-items: center;
   background-color: #1f2327;
   border-radius: 10px; /* slightly bigger radius */
-  padding: 30px 40px; /* more padding inside each row */
+  padding: 10px 15px; /* more padding inside each row */
   width: 100%;
   max-width: 900px; /* slightly wider row */
 }
@@ -79,10 +126,17 @@
   margin-top: 6px; /* slightly more spacing */
 }
 
+.map-kills-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 25px; /* more spacing */
+  flex-shrink: 0;
+  width: 60px;
+}
+
 .map-kills {
   font-weight: 700;
   font-size: 1.4rem; /* slightly bigger */
   color: #ecf0f1;
-  margin-left: 25px; /* more spacing */
-  flex-shrink: 0;
 }

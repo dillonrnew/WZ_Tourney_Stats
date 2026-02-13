@@ -1,0 +1,174 @@
+.gs-finals-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.gs-bracket-box {
+  width: 160px;
+  height: 80px;
+  background-color: #1f1f1f;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  border: 1px solid #444;
+  position: relative;
+}
+
+.gs-leaderboard {
+  background-color: #222;
+  padding: 10px;
+  border-radius: 6px;
+  max-height: none;
+  overflow: visible;
+  text-align: left;
+}
+
+.gs-leaderboard div {
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+/* Spread columns across the width of the page */
+.gs-bracket-container {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 8vh 20px 20px;
+  background-image:
+  linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+  url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.gs-bracket-layout {
+  --bracket-box-height: 80px;
+  --bracket-row-gap: 50px;
+  width: min(100%, 980px);
+  display: flex;
+  flex-direction: column;
+  gap: 28px; /* extra space between title row and item rows */
+}
+
+.gs-bracket-titles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  column-gap: 24px;
+}
+
+.gs-bracket-columns-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  column-gap: 24px; /* reduced horizontal spacing between columns */
+}
+
+.gs-bracket-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bracket-row-gap); /* more vertical spacing */
+  align-items: center;
+}
+
+.gs-finals-column {
+  padding-top: calc(var(--bracket-box-height) + var(--bracket-row-gap));
+}
+
+.gs-bracket-column-title {
+  width: 100%;
+  text-align: center;
+  color: #f3f3f3;
+  font-weight: 600;
+  font-size: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gs-bracket-column-title-span-2 {
+  grid-column: span 2;
+}
+
+/* Tooltip tweaks */
+.gs-leaderboard-tooltip {
+  z-index: 9999; /* make sure it is on top of everything */
+  max-width: 500px; /* allow wider leaderboard */
+  pointer-events: auto; /* allow scroll inside tooltip */
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+/* Optional: make the tooltip content scrollable if too tall */
+.gs-leaderboard {
+  max-height: none;
+  overflow: visible;
+  background-color: #222;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #333;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  min-width: 300px;
+}
+
+/* Title */
+.gs-leaderboard-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 8px;
+  text-align: center;
+  color: white;
+  border-bottom: 1px solid #444;
+  padding-bottom: 6px;
+}
+
+/* Two leaderboard halves side-by-side */
+.gs-leaderboard-columns {
+  display: flex;
+}
+
+.gs-leaderboard-column {
+  min-width: 140px;
+}
+
+/* Header row */
+.gs-column-header {
+  display: grid;
+  grid-template-columns: 1fr 56px;
+  font-weight: bold;
+  font-size: 13px;
+  color: #aaa;
+}
+
+/* Each data row */
+.gs-leaderboard-row {
+  display: grid;
+  grid-template-columns: 1fr 50px;
+  font-size: 14px;
+}
+
+.gs-team-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gs-team-points {
+  text-align: center;
+}
+
+.gs-tournament-topbar {
+  width: 100%;
+  background: #1f2327;
+  padding: 20px;
+  border-bottom: 2px solid #3a3f45;
+  text-align: left;
+  color: #fff;
+}

@@ -1,0 +1,236 @@
+/* =========================
+   ROOT
+   ========================= */
+.Leaderboards {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  box-sizing: border-box;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+.Leaderboards__header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.Leaderboards__header h1 {
+  font-size: 40px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.Leaderboards__header p {
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+/* =========================
+   SECTION TITLES
+   ========================= */
+.Leaderboards__section {
+  margin-bottom: 56px;
+}
+
+.Leaderboards__sectionTitle {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   FEATURED CARDS
+   ========================= */
+.Leaderboards__featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.FeaturedCard {
+  position: relative;
+  height: 420px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
+
+
+
+/* =========================
+   PLAYER IMAGE
+   ========================= */
+.FeaturedCard__image {
+  position: absolute;
+  bottom: 0;           /* stick to bottom */
+  left: 50%;           
+  transform: translateX(-50%);
+  height: 100%;        /* fill card height */
+  width: auto;         /* keep aspect ratio */
+  object-fit: contain; /* scale properly */
+  z-index: 1;          /* behind overlay */
+}
+
+/* =========================
+   OVERLAY TEXT
+   ========================= */
+.FeaturedCard__overlay {
+  position: absolute;
+  inset: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.1),
+    rgba(0, 0, 0, 0.85)
+  );
+  z-index: 2; /* above image */
+}
+
+.FeaturedCard__title {
+  font-size: 14px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.FeaturedCard__player {
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.FeaturedCard__value {
+  font-size: 32px;
+  font-weight: 900;
+  color: #f5c56b;
+}
+
+.FeaturedCard__meta {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* =========================
+   TOP LISTS
+   ========================= */
+.Leaderboards__listGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.TopListCard {
+  background: linear-gradient(180deg, #141414, #0e0e0e);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.TopListCard h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.TopListRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 16px;
+  border-bottom: 1px solid #333;
+}
+
+.TopListRow:last-child {
+  border-bottom: none;
+}
+
+.TopListRow__rank {
+  width: 30px;
+  font-weight: 700;
+}
+
+.TopListRow__name {
+  flex: 1;
+  text-align: left;
+  padding-left: 12px;
+}
+
+.TopListRow__value {
+  font-weight: 700;
+  color: #f5c56b;
+}
+
+/* =========================
+   TEAM HIGHLIGHTS
+   ========================= */
+.Leaderboards__teamGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.TeamHighlightCard {
+  background: linear-gradient(180deg, #141414, #0e0e0e);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+}
+
+.TeamHighlightCard h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.TeamHighlightCard__logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.TeamHighlightCard__roster {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.TeamHighlightCard__value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f5c56b;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 1200px) {
+  .Leaderboards__featuredGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .Leaderboards__teamGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .Leaderboards__featuredGrid {
+    grid-template-columns: 1fr;
+  }
+}

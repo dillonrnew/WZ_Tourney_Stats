@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import TournamentPage from './pages/TournamentsPage'
-import About from './pages/About'
-import Services from './pages/Services'
-import Team from './pages/AboutTheTeams'
-import Stats from './pages/Stats'
-import Tournament from './pages/Tournament'
+import TournamentsTab from './pages/Left Bar Pages/TournamentsTab'
+import PlayerStatsTab from './pages/Left Bar Pages/PlayerStatsTab'
+import LeaderboardTab from './pages/Left Bar Pages/LeaderboardTab'
+import MeetTheTeamsTab from './pages/Left Bar Pages/MeetTheTeamsTab'
+import TeamStatsTab from './pages/Left Bar Pages/TeamStatsTab'
+import IndividualTournament from './pages/IndividualTournament'
+import Finals from './pages/Major Tournament Pages/Finals'
+import GroupStages from './pages/Major Tournament Pages/GroupStages'
 import './App.css'
 import './styles/TournamentPage.css'
 
@@ -12,8 +14,8 @@ function App() {
   const pages = [
     { name: 'Tournaments', path: '/tournaments', icon: '目' },
     { name: 'Player Stats', path: '/player-stats', icon: '📊' },
+    { name: 'Team Stats', path: '/team-stats', icon: '📈' },
     { name: 'Leaderboards', path: '/leaderboards', icon: '🏆' },
-    { name: 'Stats', path: '/stats', icon: '📈' },
     { name: 'Meet The Teams', path: '/teams', icon: '👥' },
   ]
 
@@ -48,12 +50,15 @@ function App() {
         <main className="page-content">
           <Routes>
             <Route path="/" element={<Navigate to="/tournaments" replace />} />
-            <Route path="/tournaments" element={<TournamentPage />} />
-            <Route path="/player-stats" element={<About />} />
-            <Route path="/leaderboards" element={<Services />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/teams" element={<Team />} />
-            <Route path="/tournament/:id" element={<Tournament />} />
+            <Route path="/tournaments" element={<TournamentsTab />} />
+            <Route path="/player-stats" element={<PlayerStatsTab />} />
+            <Route path="/team-stats" element={<TeamStatsTab />} />
+            <Route path="/leaderboards" element={<LeaderboardTab />} />
+            <Route path="/teams" element={<MeetTheTeamsTab />} />
+            
+            <Route path="/tournament/:id" element={<IndividualTournament />} />
+            <Route path="/tournament/:id/finals" element={<Finals />} />
+            <Route path="/tournament/:id/GroupStages" element={<GroupStages />} />
           </Routes>
         </main>
       </div>

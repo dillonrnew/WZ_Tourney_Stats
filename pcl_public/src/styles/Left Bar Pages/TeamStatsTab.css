@@ -1,0 +1,224 @@
+/* =========================
+   TEAM STATS TAB ROOT
+   ========================= */
+.TeamStatsTab {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: clamp(12px, 2vw, 24px) clamp(10px, 1.8vw, 16px);
+  box-sizing: border-box;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("/background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+.TeamStatsTab__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: clamp(12px, 2vh, 18px);
+}
+
+.TeamStatsTab__title {
+  margin: 0 0 clamp(10px, 1.6vh, 14px);
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  letter-spacing: 1px;
+}
+
+/* SEARCH */
+.TeamStatsTab__search {
+  width: clamp(220px, 32vw, 320px);
+  max-width: 90vw;
+  padding: clamp(8px, 1.2vh, 10px) clamp(12px, 1.4vw, 14px);
+
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  outline: none;
+}
+
+.TeamStatsTab__search::placeholder {
+  color: #777;
+}
+
+/* =========================
+   4 COLUMN SPLIT
+   ========================= */
+.TeamStatsTab__split {
+  width: 100%;
+  flex: 1;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: clamp(3px, 1.8vw, 6px);
+  align-items: start;
+}
+
+/* each column */
+.TeamStatsTab__col {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 clamp(6px, 1vw, 12px) clamp(8px, 1.5vh, 18px);
+  box-sizing: border-box;
+}
+
+/* inner wrapper */
+.TeamStatsTab__colInner {
+  width: 100%;
+  max-width: min(100%, 520px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* column title */
+.TeamStatsTab__columnTitle {
+  margin-bottom: clamp(8px, 1.4vh, 12px);
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  font-weight: 800;
+}
+
+/* list */
+.TeamStatsTab__list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.4vh, 12px);
+}
+
+/* =========================
+   TEAM CARD
+   ========================= */
+.TeamStatsTab__card {
+  width: 100%;
+  max-width: 520px;
+  min-height: clamp(58px, 8.5vh, 76px);
+
+  padding: 0 clamp(10px, 1.6vw, 18px);
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: clamp(4px, 0.8vw, 8px);
+
+  background: linear-gradient(180deg, #141414, #0e0e0e);
+  border: 1px solid #333;
+  border-radius: 14px;
+
+  transition:
+    background 0.18s ease,
+    border 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* hover */
+.TeamStatsTab__card:hover {
+  background: #151515;
+  border-color: #444;
+}
+
+/* =========================
+   RANK
+   ========================= */
+.TeamStatsTab__rank {
+  width: clamp(14px, 1.6vw, 20px);
+  min-width: clamp(14px, 1.6vw, 20px);
+  text-align: center;
+
+  font-size: clamp(0.72rem, 1vw, 0.9rem);
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+/* =========================
+   ORG LOGO
+   ========================= */
+.TeamStatsTab__orgLogo {
+  width: clamp(34px, 4.2vw, 50px);
+  height: clamp(34px, 4.2vw, 50px);
+  min-width: clamp(34px, 4.2vw, 50px);
+  object-fit: contain;
+  display: block;
+}
+
+/* =========================
+   TEAM NAME
+   ========================= */
+.TeamStatsTab__name {
+  flex: 1;
+  min-width: 0;
+
+  text-align: left;
+  font-size: clamp(0.72rem, 0.9vw, 0.88rem);
+  font-weight: 650;
+  letter-spacing: 0px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   VALUE
+   ========================= */
+.TeamStatsTab__value {
+  min-width: clamp(42px, 5vw, 50px);
+  text-align: right;
+
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  font-weight: 850;
+  color: #f5c56b;
+}
+
+/* =========================
+   TOP 5 HIGHLIGHT
+   ========================= */
+.TeamStatsTab__card--rank1 {
+  border: 2px solid gold;
+}
+
+.TeamStatsTab__card--rank2 {
+  border: 2px solid silver;
+}
+
+.TeamStatsTab__card--rank3 {
+  border: 2px solid #cd7f32;
+}
+
+.TeamStatsTab__card--rank4 {
+  border: 2px solid #555;
+}
+
+.TeamStatsTab__card--rank5 {
+  border: 2px solid #444;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 980px) {
+  .TeamStatsTab__split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .TeamStatsTab__split {
+    grid-template-columns: 1fr;
+  }
+}

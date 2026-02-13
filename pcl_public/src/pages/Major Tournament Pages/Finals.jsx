@@ -1,17 +1,17 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import Leaderboard from '../components/TournamentLeaderboard'
-import PlayerStats from '../components/TournamentPlayerStats'
-import TeamStats from '../components/TournamentTeamStats'
-import MapWins from '../components/TournamentMapWins'
-import '../styles/TournamentsPage.css'
+import Leaderboard from '../../components/Normal Tournament Components/TournamentLeaderboard'
+import PlayerStats from '../../components/Normal Tournament Components/TournamentPlayerStats'
+import TeamStats from '../../components/Normal Tournament Components/TournamentTeamStats'
+import MapWins from '../../components/Normal Tournament Components/TournamentMapWins'
+import '../../styles/Major Tournament Pages/Finals.css'
 
-function Tournament() {
+function Finals() {
   const { id } = useParams()
   const [activeTab, setActiveTab] = useState('leaderboard')
   const [showPage, setShowPage] = useState(false)
 
-  const tournamentName = `Tournament ${id}`
+  const finalsName = `Pullze Check Ladder Finals ${id}`
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,16 +29,15 @@ function Tournament() {
   ]
 
   return (
-    <div className="tournament-page">
+    <div className="finals-page">
       {/* Top Bar */}
-      <div className="tournament-topbar">
-        <h1>{tournamentName}</h1>
+      <div className="finals-topbar">
+        <h1>{finalsName}</h1>
       </div>
 
-      {/* Mount ALL tabs immediately (hidden until showPage) */}
       <div style={{ display: showPage ? 'block' : 'none' }}>
         {/* Navigation Tabs */}
-        <div className="tournament-tabs">
+        <div className="finals-tabs">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -51,42 +50,29 @@ function Tournament() {
         </div>
 
         {/* Content Area */}
-        <div className="tournament-content">
-          <div
-            className="tournament-tab-panel"
-            style={{ display: activeTab === 'leaderboard' ? 'block' : 'none' }}
-          >
+        <div className="finals-content">
+          <div style={{ display: activeTab === 'leaderboard' ? 'block' : 'none' }}>
             <Leaderboard tournamentId={id} />
           </div>
 
-          <div
-            className="tournament-tab-panel"
-            style={{ display: activeTab === 'player-stats' ? 'block' : 'none' }}
-          >
+          <div style={{ display: activeTab === 'player-stats' ? 'block' : 'none' }}>
             <PlayerStats tournamentId={id} />
           </div>
 
-          <div
-            className="tournament-tab-panel"
-            style={{ display: activeTab === 'team-stats' ? 'block' : 'none' }}
-          >
+          <div style={{ display: activeTab === 'team-stats' ? 'block' : 'none' }}>
             <TeamStats tournamentId={id} />
           </div>
 
-          <div
-            className="tournament-tab-panel"
-            style={{ display: activeTab === 'map-wins' ? 'block' : 'none' }}
-          >
+          <div style={{ display: activeTab === 'map-wins' ? 'block' : 'none' }}>
             <MapWins tournamentId={id} />
           </div>
         </div>
       </div>
 
-      {/* Optional: tiny placeholder during 250ms */}
       {!showPage && (
-        <div className="tournament-content">
+        <div className="finals-content">
           <div style={{ padding: 24, opacity: 0.6 }}>
-            Loading tournament…
+            Loading finals…
           </div>
         </div>
       )}
@@ -94,4 +80,4 @@ function Tournament() {
   )
 }
 
-export default Tournament
+export default Finals

@@ -1,81 +1,50 @@
-import '../styles/TournamentCard.css'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
-function TournamentCard({ tournament, items }) {
-  const navigate = useNavigate()
-  const [activeFilter, setActiveFilter] = useState(
-    items?.[0]?.category || 'all'
-  )
-
-  // Get unique categories
-  const categories = items
-    ? [...new Set(items.map((item) => item.category || 'all'))]
-    : []
-
-  // Filter items
-  const filteredItems =
-    activeFilter === 'all'
-      ? items
-      : items?.filter((item) => item.category === activeFilter)
-
-  const handleCardClick = () => {
-    navigate(`/tournament/${tournament.id}`)
-  }
-
+function TournamentCard({ tournament, items = [], cardTo }) {
   return (
-    <div
-      className="tournament-card-container"
-      onClick={handleCardClick}
-      role="button"
-    >
-      <div className="card-header-image">
-        <img src={tournament.image || ''} alt="" />
-        <div className="card-overlay"></div>
-
-        <div className="card-header-content">
-          <h3 className="card-title-overlay">{tournament.name}</h3>
-          <p className="card-subtitle">
-            {tournament.subtitle || 'Latest events'}
-          </p>
-        </div>
-      </div>
-
-      {categories.length > 1 && (
-        <div className="card-filters" onClick={(e) => e.stopPropagation()}>
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={`filter-tab ${
-                activeFilter === category ? 'active' : ''
-              }`}
-              onClick={() => setActiveFilter(category)}
-            >
-              {category}
-            </button>
-          ))}
+    <div className="t-card">
+      {/* Clickable header (image + title) */}
+      {cardTo ? (
+        <Link to={cardTo} className="t-card__header">
+          <img className="t-card__img" src={tournament.image} alt={tournament.name} />
+          <div className="t-card__titleWrap">
+            <h3 className="t-card__title">{tournament.name}</h3>
+            <p className="t-card__hint">Open tournament</p>
+          </div>
+        </Link>
+      ) : (
+        <div className="t-card__header">
+          <img className="t-card__img" src={tournament.image} alt={tournament.name} />
+          <div className="t-card__titleWrap">
+            <h3 className="t-card__title">{tournament.name}</h3>
+          </div>
         </div>
       )}
 
-      <div className="card-items" onClick={(e) => e.stopPropagation()}>
-        {filteredItems &&
-          filteredItems.map((item) => (
-            <button key={item.id} className="card-item-box">
-              <div className="item-icon">{item.icon || '⚡'}</div>
-
-              <div className="item-content">
-                <p className="item-text">{item.title}</p>
-                {item.time && (
-                  <p className="item-time">{item.time}</p>
-                )}
-              </div>
-
-              <div className="item-arrow">›</div>
-            </button>
-          ))}
+      {/* Items under the card */}
+      <div className="t-card__items">
+        {items.length === 0 ? (
+          <p className="t-card__empty">No sections yet</p>
+        ) : (
+          items.map((item) => (
+            <div key={item.id} className="t-card__item">
+              {item.to ? (
+                <Link to={item.to} className="t-card__itemLink">
+                  <span className="t-card__itemTitle">{item.title}</span>
+                  <span className="t-card__itemArrow">→</span>
+                </Link>
+              ) : (
+                <div className="t-card__itemRow">
+                  <span className="t-card__itemTitle">{item.title}</span>
+                  {item.time ? <span className="t-card__itemTime">{item.time}</span> : null}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default TournamentCard
+export default TournamentCard;

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import "../styles/TournamentTeamStats.css";
+import "../../styles/TournamentTeamStats.css";
 
 /**
  * Demo data:

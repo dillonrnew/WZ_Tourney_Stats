@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../styles/PlayerStats.css";
+import "../../styles/TournamentPlayerStats.css";
 
 const PLAYER_IMAGE_BASE =
   "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures";

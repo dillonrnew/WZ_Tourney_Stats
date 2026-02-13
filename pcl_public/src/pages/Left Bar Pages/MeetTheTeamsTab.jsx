@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import '../styles/Team.css'
+import '../../styles/Left Bar Pages/MeetTheTeamsTab.css'
 
 function Team() {
   const BASE_IMAGE_URL =
-    'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Player%20Pictures'
+    'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures'
   const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 
   const getPlayerImage = (playerName) =>

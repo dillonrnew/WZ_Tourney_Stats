@@ -1,4 +1,4 @@
-import '../styles/Leaderboard.css'
+import '../../styles/Leaderboard.css'
 
 const BASE_IMAGE_URL =
   'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos'
