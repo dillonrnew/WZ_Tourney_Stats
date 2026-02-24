@@ -2,6 +2,9 @@
 import { useMemo, useState } from "react"
 import "../../styles/Left Bar Pages/TeamStatsTab.css"
 
+const DEFAULT_TEAM_LOGO =
+  "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
+
 /* =========================
    TEAM DATA (demo)
    ========================= */
@@ -120,7 +123,7 @@ function TeamStatsTab() {
 
                 <img
                   className="TeamStatsTab__orgLogo"
-                  src={team.orgLogo}
+                  src={DEFAULT_TEAM_LOGO}
                   alt=""
                 />
 

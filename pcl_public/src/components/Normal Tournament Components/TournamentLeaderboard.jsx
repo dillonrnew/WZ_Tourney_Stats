@@ -1,4 +1,6 @@
+import { useEffect, useMemo, useState } from 'react'
 import '../../styles/Leaderboard.css'
+import { fetchRows } from '../../lib/supabaseRest'
 
 const BASE_IMAGE_URL =
   'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos'
@@ -6,32 +8,96 @@ const BASE_IMAGE_URL =
 const DEFAULT_TEAM_IMAGE = `${BASE_IMAGE_URL}/NONE.png`
 
 // Convert team name to filename-safe format
-const getTeamImage = (teamName) => {
-  return `${BASE_IMAGE_URL}/${teamName.toUpperCase()}.png`
+const getTeamImage = () => {
+  return DEFAULT_TEAM_IMAGE
 }
 
-function Leaderboard() {
-  const teams = [
-    { id: 1, name: 'GEN.G', players: ['AYDAN', 'RATED', 'LENUN'], score: 152 },
-    { id: 2, name: 'AG GLOBAL', players: ['FIFAKILL', 'OEKIY', 'SCUMMN'], score: 144 },
-    { id: 3, name: 'LFAO', players: ['ELATOO', 'GOODBYE60HZ', 'VEYL'], score: 138 },
-    { id: 4, name: 'WZPD', players: ['CLOWHN', 'COLONY2K', 'WATCHWALDO'], score: 130 },
-    { id: 5, name: '#ON', players: ['ELITO', 'LAWLET', 'SOSSA'], score: 126 },
-    { id: 6, name: 'GENTLE MATES', players: ['ENKEO', 'GROMALOK', 'HALLOW'], score: 121 },
-    { id: 7, name: 'T1', players: ['DISRRPT', 'ECHO', 'SPAMGOLA'], score: 118 },
-    { id: 8, name: 'NINJAS IN PYJAMAS', players: ['KINGAJ', 'PRXDIGY', 'WARSZ'], score: 110 },
-    { id: 9, name: 'SVGE', players: ['DESHI', 'IVISIONSR', 'SHOWSTOPPER'], score: 104 },
-    { id: 10, name: 'ESC', players: ['BLINGCJAY', 'KINGCHAWK', 'NIASEN'], score: 98 },
-    { id: 11, name: 'TEAM BAKA', players: ['GUNX', 'JAYVELA', 'PRAISE'], score: 94 },
-    { id: 12, name: 'TEAM ZEBRA', players: ['BRAXTVN', 'CLXP', 'RYDA'], score: 90 },
-    { id: 13, name: 'ORGLESS', players: ['EMPATHY', 'INTECHS', 'NATEDOGG'], score: 86 },
-    { id: 14, name: 'EKLETYC', players: ['ISFREDDY', 'KIBEYZ', 'ZANX'], score: 82 },
-    { id: 15, name: 'RVX', players: ['RESOLVE', 'VXLCOM', 'XTRAJ'], score: 78 },
-    { id: 16, name: 'EXAMPLE', players: ['PLAYER1', 'PLAYER2', 'PLAYER3'], score: 72 },
-  ]
+const formatScore = (score) => {
+  if (Number.isInteger(score)) return score
+  return Number(score.toFixed(2))
+}
 
-  const leftColumn = teams.slice(0, 8)
-  const rightColumn = teams.slice(8, 16)
+function Leaderboard({ tournamentId }) {
+  const [teams, setTeams] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadData = async () => {
+      setLoading(true)
+      setError('')
+
+      try {
+        const [teamRows, mapRows] = await Promise.all([
+          fetchRows('Team Data', {
+            select: 'id,team_name,player_1,player_2,player_3',
+            filters: { tournament_id: tournamentId },
+          }),
+          fetchRows('Map Data', {
+            select: 'team_id,map_points',
+            filters: { tournament_id: tournamentId },
+          }),
+        ])
+
+        const scoreByTeamId = new Map()
+        mapRows.forEach((row) => {
+          const current = scoreByTeamId.get(row.team_id) || 0
+          scoreByTeamId.set(row.team_id, current + Number(row.map_points || 0))
+        })
+
+        const nextTeams = teamRows
+          .map((team) => ({
+            id: team.id,
+            name: team.team_name || 'Unknown Team',
+            players: [team.player_1, team.player_2, team.player_3].filter(Boolean),
+            score: scoreByTeamId.get(team.id) || 0,
+          }))
+          .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+
+        if (!cancelled) {
+          setTeams(nextTeams)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || 'Failed to load leaderboard data.')
+          setTeams([])
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    if (tournamentId) {
+      loadData()
+    } else {
+      setTeams([])
+      setLoading(false)
+    }
+
+    return () => {
+      cancelled = true
+    }
+  }, [tournamentId])
+
+  const splitIndex = useMemo(() => Math.ceil(teams.length / 2), [teams])
+  const leftColumn = teams.slice(0, splitIndex)
+  const rightColumn = teams.slice(splitIndex)
+
+  if (loading) {
+    return <div className="leaderboard-wrapper">Loading leaderboard...</div>
+  }
+
+  if (error) {
+    return <div className="leaderboard-wrapper">{error}</div>
+  }
+
+  if (!teams.length) {
+    return <div className="leaderboard-wrapper">No leaderboard data found.</div>
+  }
 
   const renderColumn = (columnTeams, offset) => (
     <div className="leaderboard-column">
@@ -65,7 +131,7 @@ function Leaderboard() {
             </div>
           </div>
 
-          <div className="team-score">{team.score}</div>
+          <div className="team-score">{formatScore(team.score)}</div>
         </div>
       ))}
     </div>
@@ -75,7 +141,7 @@ function Leaderboard() {
     <div className="leaderboard-wrapper">
       <div className="leaderboard-columns">
         {renderColumn(leftColumn, 0)}
-        {renderColumn(rightColumn, 8)}
+        {renderColumn(rightColumn, leftColumn.length)}
       </div>
     </div>
   )

@@ -8,7 +8,9 @@ import "../../styles/Left Bar Pages/PlayerStatsTab.css"
 const BASE_IMAGE_URL =
   "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures"
 const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
-const getPlayerImage = (playerName) => `${BASE_IMAGE_URL}/${playerName}.png`
+const DEFAULT_TEAM_LOGO =
+  "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
+const getPlayerImage = () => DEFAULT_IMAGE
 
 /* =========================
    PLAYER DATA (demo)
@@ -157,7 +159,7 @@ function PlayerStatsTab() {
                 {/* Org logo */}
                 <img
                   className="PlayerStatsTab__orgLogo"
-                  src={player?.orgLogo}
+                  src={DEFAULT_TEAM_LOGO}
                   alt=""
                 />
 

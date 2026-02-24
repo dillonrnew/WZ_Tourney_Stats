@@ -1,25 +1,17 @@
 import { Link } from "react-router-dom";
 
-function TournamentCard({ tournament, items = [], cardTo }) {
+function TournamentCard({ tournament, items = [] }) {
   return (
     <div className="t-card">
-      {/* Clickable header (image + title) */}
-      {cardTo ? (
-        <Link to={cardTo} className="t-card__header">
-          <img className="t-card__img" src={tournament.image} alt={tournament.name} />
-          <div className="t-card__titleWrap">
-            <h3 className="t-card__title">{tournament.name}</h3>
-            <p className="t-card__hint">Open tournament</p>
-          </div>
-        </Link>
-      ) : (
-        <div className="t-card__header">
-          <img className="t-card__img" src={tournament.image} alt={tournament.name} />
-          <div className="t-card__titleWrap">
-            <h3 className="t-card__title">{tournament.name}</h3>
-          </div>
+      <div className="t-card__header">
+        <div className="t-card__titleWrap">
+          <h3 className="t-card__title">{tournament.name}</h3>
         </div>
-      )}
+        <div className="t-card__imgWrap">
+          <img className="t-card__img" src={tournament.image} alt={tournament.name} />
+          <div className="t-card__imgOverlay" aria-hidden="true" />
+        </div>
+      </div>
 
       {/* Items under the card */}
       <div className="t-card__items">

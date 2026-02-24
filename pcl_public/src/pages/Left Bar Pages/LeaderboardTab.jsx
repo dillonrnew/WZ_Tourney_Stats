@@ -1,6 +1,10 @@
 // src/pages/Leaderboards.jsx
 import "../../styles/Left Bar Pages/LeaderboardTab.css"
 
+const DEFAULT_PLAYER_IMAGE =
+  "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures/DEFAULT.png"
+const DEFAULT_TEAM_LOGO = "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
+
 const featuredStats = [
   {
     title: "Highest Kill Game",
@@ -70,7 +74,7 @@ function Leaderboards() {
           {featuredStats.map((stat) => (
             <div key={stat.title} className="FeaturedCard">
               <img
-                src={stat.image}
+                src={DEFAULT_PLAYER_IMAGE}
                 alt={stat.player}
                 className="FeaturedCard__image"
               />
@@ -117,7 +121,7 @@ function Leaderboards() {
               <h3>{team.title}</h3>
 
               <img
-                src={team.logo}
+                src={DEFAULT_TEAM_LOGO}
                 alt={team.org}
                 className="TeamHighlightCard__logo"
               />

@@ -5,17 +5,17 @@ import "../../styles/Left Bar Pages/TournamentsTab.css";
 function Home() {
   const majorTournaments = [
     {
-      id: 1,
+      id: "820d3233-098e-45b4-a59c-67a03021df41",
       name: "Pullze Check Ladder",
-      image: "https://pbs.twimg.com/media/G-fRVqZXAAAOBHA?format=jpg&name=large",
+      image: "https://pbs.twimg.com/profile_banners/1750627586596540416/1771445212/600x200",
     },
   ];
 
   const majorTournamentItems = {
-    1: [
-      { id: 1, title: "Qualifiers", to: "/tournament/1/qualifiers" },
-      { id: 2, title: "Group Stages", to: "/tournament/1/GroupStages" },
-      { id: 3, title: "Finals", to: "/tournament/1/finals" },
+    "820d3233-098e-45b4-a59c-67a03021df41": [
+      { id: 1, title: "Qualifiers", to: "/tournament/820d3233-098e-45b4-a59c-67a03021df41/qualifiers" },
+      { id: 2, title: "Group Stages", to: "/tournament/820d3233-098e-45b4-a59c-67a03021df41/GroupStages" },
+      { id: 3, title: "Finals", to: "/tournament/820d3233-098e-45b4-a59c-67a03021df41/finals" },
     ],
   };
 
@@ -45,7 +45,6 @@ function Home() {
               key={tournament.id}
               tournament={tournament}
               items={majorTournamentItems[tournament.id] || []}
-              cardTo={`/tournament/${tournament.id}`}
             />
           ))}
         </div>

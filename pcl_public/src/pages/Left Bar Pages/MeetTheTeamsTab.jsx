@@ -6,8 +6,8 @@ function Team() {
     'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures'
   const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 
-  const getPlayerImage = (playerName) =>
-    `${BASE_IMAGE_URL}/${playerName}.png`
+  const getPlayerImage = () =>
+    DEFAULT_IMAGE
 
   const teams = [
     {
