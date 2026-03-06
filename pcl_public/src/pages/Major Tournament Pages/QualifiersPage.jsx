@@ -551,66 +551,82 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
       }
 
       try {
-        const uniqueTournamentNames = [...new Set(lookups.map((item) => item.tournamentName))];
-
-        const tournamentRows = uniqueTournamentNames.length
-          ? await fetchRows("tournaments", {
-              select: "*",
-              filters: { '"Name"': uniqueTournamentNames },
-              order: { column: "id", ascending: false },
-            })
-          : [];
-
         const tournamentsByName = new Map();
-        (tournamentRows || []).forEach((row) => {
-          const name = row?.Name || row?.["Name"];
-          if (!name) return;
-          const existing = tournamentsByName.get(name) || [];
-          existing.push(row);
-          tournamentsByName.set(name, existing);
-        });
-
-        const tournamentIds = [...new Set(
-          Array.from(tournamentsByName.values())
-            .flat()
-            .map((row) => row?.id)
-            .filter(Boolean)
-        )];
-
-        const [teamRowsResult, mapRowsResult] = tournamentIds.length
-          ? await Promise.allSettled([
-              fetchRows("team_info_view", {
-                select: "*",
-                filters: { tournament_id: tournamentIds },
-                limit: 5000,
-              }),
-              fetchRows("map_data", {
-                select: "tournament_id,team_id,map_number,map_placement,map_points",
-                filters: { tournament_id: tournamentIds },
-                limit: 20000,
-              }),
-            ])
-          : [{ status: "fulfilled", value: [] }, { status: "fulfilled", value: [] }];
-
-        const allTeamRows = teamRowsResult.status === "fulfilled" ? teamRowsResult.value || [] : [];
-        const allMapRows = mapRowsResult.status === "fulfilled" ? mapRowsResult.value || [] : [];
-
         const teamsByTournamentId = new Map();
-        allTeamRows.forEach((row) => {
-          const tournamentId = row?.tournament_id;
-          if (!tournamentId) return;
-          const existing = teamsByTournamentId.get(tournamentId) || [];
-          existing.push(row);
-          teamsByTournamentId.set(tournamentId, existing);
-        });
-
         const mapsByTournamentId = new Map();
-        allMapRows.forEach((row) => {
-          const tournamentId = row?.tournament_id;
-          if (!tournamentId) return;
-          const existing = mapsByTournamentId.get(tournamentId) || [];
-          existing.push(row);
-          mapsByTournamentId.set(tournamentId, existing);
+        const appendTournamentRowsByName = (rows = []) => {
+          rows.forEach((row) => {
+            const name = row?.Name || row?.["Name"];
+            if (!name) return;
+            const existing = tournamentsByName.get(name) || [];
+            existing.push(row);
+            tournamentsByName.set(name, existing);
+          });
+        };
+        const appendRowsByTournamentId = (rows = [], targetMap) => {
+          rows.forEach((row) => {
+            const tournamentId = row?.tournament_id;
+            if (!tournamentId) return;
+            const existing = targetMap.get(tournamentId) || [];
+            existing.push(row);
+            targetMap.set(tournamentId, existing);
+          });
+        };
+
+        const lookupsByRound = [1, 2, 3, 4]
+          .map((round) => ({
+            key: `round-${round}`,
+            entries: lookups.filter((item) => ROUND_BY_NODE_ID[item.nodeId] === round),
+          }))
+          .filter((group) => group.entries.length > 0);
+        const groupStageLookups = lookups.filter((item) => ROUND_BY_NODE_ID[item.nodeId] === undefined);
+        if (groupStageLookups.length) {
+          lookupsByRound.push({ key: "group-stage", entries: groupStageLookups });
+        }
+
+        for (const lookupGroup of lookupsByRound) {
+          const groupTournamentNames = [
+            ...new Set(lookupGroup.entries.map((item) => item.tournamentName).filter(Boolean)),
+          ];
+          if (!groupTournamentNames.length) continue;
+
+          const groupTournamentRows = await fetchRows("tournaments", {
+            select: "*",
+            filters: { '"Name"': groupTournamentNames },
+            order: { column: "id", ascending: false },
+          });
+          appendTournamentRowsByName(groupTournamentRows || []);
+
+          const groupTournamentIds = [
+            ...new Set((groupTournamentRows || []).map((row) => row?.id).filter(Boolean)),
+          ];
+          if (!groupTournamentIds.length) continue;
+
+          const [teamRowsResult, mapRowsResult] = await Promise.allSettled([
+            fetchRows("team_info_view", {
+              select: "*",
+              filters: { tournament_id: groupTournamentIds },
+              limit: 5000,
+            }),
+            fetchRows("map_data", {
+              select: "tournament_id,team_id,map_number,map_placement,map_points",
+              filters: { tournament_id: groupTournamentIds },
+              limit: 20000,
+            }),
+          ]);
+          const groupTeamRows = teamRowsResult.status === "fulfilled" ? teamRowsResult.value || [] : [];
+          const groupMapRows = mapRowsResult.status === "fulfilled" ? mapRowsResult.value || [] : [];
+
+          appendRowsByTournamentId(groupTeamRows, teamsByTournamentId);
+          appendRowsByTournamentId(groupMapRows, mapsByTournamentId);
+          console.log(
+            `[QualifiersPage] Loaded ${lookupGroup.key}: tournaments=${groupTournamentRows?.length || 0}, teams=${groupTeamRows.length}, maps=${groupMapRows.length}`
+          );
+        }
+
+        lookups.forEach(({ tournamentName }) => {
+          if (tournamentsByName.has(tournamentName)) return;
+          tournamentsByName.set(tournamentName, []);
         });
 
         const pickBestTournamentRow = (rowsForName = []) => {
