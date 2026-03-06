@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate } from 'react-router-dom'
 import TournamentsTab from './pages/Left Bar Pages/TournamentsTab'
 import PlayerStatsTab from './pages/Left Bar Pages/PlayerStatsTab'
@@ -13,6 +14,7 @@ import './App.css'
 import './styles/TournamentPage.css'
 
 function App() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const pages = [
     { name: 'Tournaments', path: '/tournaments', icon: '🎯' },
     { name: 'Player Stats', path: '/player-stats', icon: '📊' },
@@ -23,9 +25,18 @@ function App() {
 
   return (
     <Router>
-      <div className="app-layout">
+      <div className={`app-layout ${isSidebarOpen ? '' : 'sidebar-hidden'}`}>
         <aside className="sidebar">
-          <div className="sidebar-logo" />
+          <div className="sidebar-toggle-wrap">
+            <button
+              type="button"
+              className="sidebar-toggle-btn"
+              onClick={() => setIsSidebarOpen((prev) => !prev)}
+              aria-label={isSidebarOpen ? 'Hide left sidebar' : 'Show left sidebar'}
+            >
+              {isSidebarOpen ? '<' : '>'}
+            </button>
+          </div>
 
           <nav className="sidebar-nav">
             {pages.map((page) => (
