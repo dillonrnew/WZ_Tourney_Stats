@@ -344,6 +344,27 @@ const prioritizeWinnerInLeaderboard = (rows = [], winnerTeamId = null, winnerTea
   return [winnerRow, ...rows.slice(0, winnerIndex), ...rows.slice(winnerIndex + 1)];
 };
 
+const extractPlayerNamesFromTeamRows = (teamRows = []) => {
+  const namesByKey = new Map();
+  teamRows.forEach((team) => {
+    [
+      team?.updated_player_1,
+      team?.updated_player_2,
+      team?.updated_player_3,
+      team?.player_1,
+      team?.player_2,
+      team?.player_3,
+    ].forEach((name) => {
+      const trimmed = String(name || "").trim();
+      const normalized = normalizeText(trimmed);
+      if (normalized && !namesByKey.has(normalized)) {
+        namesByKey.set(normalized, trimmed);
+      }
+    });
+  });
+  return Array.from(namesByKey.values());
+};
+
 function anchorPoint(item, anchor) {
   if (!item.visible) return { x: item.x, y: item.y };
   if (anchor === "top") return { x: item.x + NODE_WIDTH / 2, y: item.y };
@@ -383,12 +404,72 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
   const [nodeWinnersById, setNodeWinnersById] = useState({});
   const [hoveredNodeId, setHoveredNodeId] = useState(null);
   const [hoverLeaderboardByTournamentId, setHoverLeaderboardByTournamentId] = useState({});
+  const [playerSearch, setPlayerSearch] = useState("");
+  const [isPlayerSearchFocused, setIsPlayerSearchFocused] = useState(false);
   const [finalsNodeData, setFinalsNodeData] = useState({
     winner: "TBD",
     logo: DEFAULT_TEAM_IMAGE,
     tournamentId: null,
     previewRows: [],
+    playerNames: [],
   });
+  const normalizedPlayerSearch = normalizeText(playerSearch);
+  const matchedNodeIds = useMemo(() => {
+    if (!normalizedPlayerSearch) return new Set();
+    const next = new Set();
+    Object.entries(nodeWinnersById).forEach(([nodeId, nodeData]) => {
+      const hasMatch = (nodeData?.playerNames || []).some((name) =>
+        normalizeText(name).includes(normalizedPlayerSearch)
+      );
+      if (hasMatch) {
+        next.add(nodeId);
+      }
+    });
+    const finalsMatch = (finalsNodeData.playerNames || []).some((name) =>
+      normalizeText(name).includes(normalizedPlayerSearch)
+    );
+    if (finalsMatch) {
+      next.add("finals-node");
+    }
+    return next;
+  }, [finalsNodeData.playerNames, nodeWinnersById, normalizedPlayerSearch]);
+  const allSearchablePlayerNames = useMemo(() => {
+    const namesByKey = new Map();
+    Object.values(nodeWinnersById).forEach((nodeData) => {
+      (nodeData?.playerNames || []).forEach((name) => {
+        const key = normalizeText(name);
+        if (key && !namesByKey.has(key)) {
+          namesByKey.set(key, name);
+        }
+      });
+    });
+    (finalsNodeData.playerNames || []).forEach((name) => {
+      const key = normalizeText(name);
+      if (key && !namesByKey.has(key)) {
+        namesByKey.set(key, name);
+      }
+    });
+    return Array.from(namesByKey.entries())
+      .map(([normalized, display]) => ({ normalized, display }))
+      .sort((a, b) => a.display.localeCompare(b.display));
+  }, [finalsNodeData.playerNames, nodeWinnersById]);
+  const playerSearchSuggestions = useMemo(() => {
+    if (!normalizedPlayerSearch) return [];
+    return allSearchablePlayerNames
+      .filter((item) => item.normalized.includes(normalizedPlayerSearch))
+      .sort((a, b) => {
+        const aStarts = a.normalized.startsWith(normalizedPlayerSearch) ? 0 : 1;
+        const bStarts = b.normalized.startsWith(normalizedPlayerSearch) ? 0 : 1;
+        if (aStarts !== bStarts) return aStarts - bStarts;
+        const aIndex = a.normalized.indexOf(normalizedPlayerSearch);
+        const bIndex = b.normalized.indexOf(normalizedPlayerSearch);
+        if (aIndex !== bIndex) return aIndex - bIndex;
+        return a.display.localeCompare(b.display);
+      })
+      .slice(0, 8);
+  }, [allSearchablePlayerNames, normalizedPlayerSearch]);
+  const showPlayerSearchSuggestions =
+    isPlayerSearchFocused && normalizedPlayerSearch.length > 0 && playerSearchSuggestions.length > 0;
 
   const tournamentName = "Pullze Check Ladder";
   const nodeMap = useMemo(() => new Map(BRACKET_NODES.map((item) => [item.id, item])), []);
@@ -586,7 +667,13 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
           const tournamentId = tournamentRow?.id || null;
 
           if (!tournamentId) {
-            next[nodeId] = { winner: "TBD", logo: DEFAULT_TEAM_IMAGE, tournamentId: null, previewRows: [] };
+            next[nodeId] = {
+              winner: "TBD",
+              logo: DEFAULT_TEAM_IMAGE,
+              tournamentId: null,
+              previewRows: [],
+              playerNames: [],
+            };
             continue;
           }
 
@@ -630,7 +717,13 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
             previewRows[0]?.name ||
             "TBD";
 
-          next[nodeId] = { winner: winnerName, logo: getTeamImage(winnerName), tournamentId, previewRows };
+          next[nodeId] = {
+            winner: winnerName,
+            logo: getTeamImage(winnerName),
+            tournamentId,
+            previewRows,
+            playerNames: extractPlayerNamesFromTeamRows(teamRows),
+          };
           nextHoverLeaderboards[tournamentId] = previewRows;
         }
 
@@ -681,6 +774,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
               logo: getTeamImage(finalWinnerName),
               tournamentId: id,
               previewRows: finalPreviewRows,
+              playerNames: extractPlayerNamesFromTeamRows(finalTeamRows),
             });
           }
         } else {
@@ -689,6 +783,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
             logo: DEFAULT_TEAM_IMAGE,
             tournamentId: null,
             previewRows: [],
+            playerNames: [],
           });
         }
 
@@ -703,6 +798,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
           logo: DEFAULT_TEAM_IMAGE,
           tournamentId: id || null,
           previewRows: [],
+          playerNames: [],
         });
         const requestsUsed = getSupabaseRequestCount() - requestCountStart;
         console.log(`[QualifiersPage] Supabase requests during load: ${requestsUsed}`);
@@ -759,7 +855,50 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
     <div className="qp-page">
       <div className="qp-topbar">
         <h1>{tournamentName} - Qualifiers and Group Stages</h1>
-        <p>Tournament ID: {id}</p>
+        <div className="qp-player-search">
+          <label htmlFor="qp-player-search-input">Search player</label>
+          <div className="qp-player-search-input-wrap">
+            <input
+              id="qp-player-search-input"
+              type="text"
+              value={playerSearch}
+              onChange={(event) => {
+                setPlayerSearch(event.target.value);
+                setIsPlayerSearchFocused(true);
+              }}
+              onFocus={() => setIsPlayerSearchFocused(true)}
+              onBlur={() => {
+                window.setTimeout(() => setIsPlayerSearchFocused(false), 120);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  setIsPlayerSearchFocused(false);
+                }
+              }}
+              placeholder="Search player..."
+              aria-label="Search player"
+              autoComplete="off"
+            />
+            {showPlayerSearchSuggestions ? (
+              <ul className="qp-player-search-suggestions" role="listbox" aria-label="Player suggestions">
+                {playerSearchSuggestions.map((item) => (
+                  <li key={item.normalized}>
+                    <button
+                      type="button"
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        setPlayerSearch(item.display);
+                        setIsPlayerSearchFocused(false);
+                      }}
+                    >
+                      {item.display}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        </div>
       </div>
 
       {showPage ? (
@@ -851,7 +990,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
                 return (
                   <article
                     key={item.id}
-                    className={`qp-node ${item.id === "groups" ? "qp-node-highlight qp-node-entry-only" : ""} ${item.tournamentId ? "qp-node-clickable" : ""}`}
+                    className={`qp-node ${item.id === "groups" ? "qp-node-highlight qp-node-entry-only" : ""} ${item.tournamentId ? "qp-node-clickable" : ""} ${matchedNodeIds.has(item.id) ? "qp-node-player-match" : ""}`}
                     style={{ left: item.x, top: item.y + BRACKET_OFFSET_Y }}
                     onClick={() => openNodeLeaderboard(item.tournamentId)}
                     onMouseEnter={() => {
@@ -956,7 +1095,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
               {groupStageNodesWithWinners.map((item) => (
                 <article
                   key={item.id}
-                  className={`qp-node qp-gs-node ${item.id === "gso" ? "qp-node-highlight" : ""} ${item.tournamentId ? "qp-node-clickable" : ""}`}
+                  className={`qp-node qp-gs-node ${item.id === "gso" ? "qp-node-highlight" : ""} ${item.tournamentId ? "qp-node-clickable" : ""} ${matchedNodeIds.has(item.id) ? "qp-node-player-match" : ""}`}
                   style={{ left: item.x, top: item.y }}
                   onClick={() => openNodeLeaderboard(item.tournamentId)}
                   onMouseEnter={() => {
@@ -1062,7 +1201,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
               </div>
 
               <article
-                className={`qp-node qp-finals-node ${finalsNodeData.tournamentId ? "qp-node-clickable" : ""}`}
+                className={`qp-node qp-finals-node ${finalsNodeData.tournamentId ? "qp-node-clickable" : ""} ${matchedNodeIds.has("finals-node") ? "qp-node-player-match" : ""}`}
                 onClick={() => openNodeLeaderboard(finalsNodeData.tournamentId)}
                 onMouseEnter={() => {
                   if (!finalsNodeData.tournamentId) return;
