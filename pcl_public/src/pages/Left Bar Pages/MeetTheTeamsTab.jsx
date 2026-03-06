@@ -1,173 +1,64 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
+import { fetchRows } from '../../lib/supabaseRest'
 import '../../styles/Left Bar Pages/MeetTheTeamsTab.css'
 
 function Team() {
   const BASE_IMAGE_URL =
-    'https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures'
+    'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots'
   const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 
-  const getPlayerImage = () =>
-    DEFAULT_IMAGE
+  const getPlayerImage = (playerName) =>
+    playerName ? `${BASE_IMAGE_URL}/${encodeURIComponent(playerName)}.png` : DEFAULT_IMAGE
 
-  const teams = [
-    {
-      id: 1,
-      name: 'GEN.G',
-      players: [
-        { id: 1, name: 'AYDAN' },
-        { id: 2, name: 'RATED' },
-        { id: 3, name: 'LENUN' },
-      ],
-    },
-    {
-      id: 2,
-      name: 'AG GLOBAL',
-      players: [
-        { id: 4, name: 'FIFAKILL' },
-        { id: 5, name: 'OEKIY' },
-        { id: 6, name: 'SCUMMN' },
-      ],
-    },
-    {
-      id: 3,
-      name: 'LFAO',
-      players: [
-        { id: 7, name: 'ELATOO' },
-        { id: 8, name: 'GOODBYE60HZ' },
-        { id: 9, name: 'VEYL' },
-      ],
-    },
-    {
-      id: 4,
-      name: 'WZPD',
-      players: [
-        { id: 10, name: 'CLOWHN' },
-        { id: 11, name: 'COLONY2K' },
-        { id: 12, name: 'WATCHWALDO' },
-      ],
-    },
-    {
-      id: 5,
-      name: '#ON',
-      players: [
-        { id: 13, name: 'ELITO' },
-        { id: 14, name: 'LAWLET' },
-        { id: 15, name: 'SOSSA' },
-      ],
-    },
-    {
-      id: 6,
-      name: 'GENTLE MATES',
-      players: [
-        { id: 16, name: 'ENKEO' },
-        { id: 17, name: 'GROMALOK' },
-        { id: 18, name: 'HALLOW' },
-      ],
-    },
-    {
-      id: 7,
-      name: 'T1',
-      players: [
-        { id: 19, name: 'DISRRPT' },
-        { id: 20, name: 'ECHO' },
-        { id: 21, name: 'SPAMGOLA' },
-      ],
-    },
-    {
-      id: 8,
-      name: 'NINJAS IN PYJAMAS',
-      players: [
-        { id: 22, name: 'KINGAJ' },
-        { id: 23, name: 'PRXDIGY' },
-        { id: 24, name: 'WARSZ' },
-      ],
-    },
-    {
-      id: 9,
-      name: 'SVGE ESPORTS',
-      players: [
-        { id: 28, name: 'DESHI' },
-        { id: 29, name: 'IVISIONSR' },
-        { id: 30, name: 'SHOWSTOPPER' },
-      ],
-    },
-    {
-      id: 10,
-      name: 'ESC',
-      players: [
-        { id: 31, name: 'BLINGCJAY' },
-        { id: 32, name: 'KINGCHAWK' },
-        { id: 33, name: 'NIASEN' },
-      ],
-    },
-    {
-      id: 11,
-      name: 'TEAM BAKA',
-      players: [
-        { id: 34, name: 'GUNX' },
-        { id: 35, name: 'JAYVELA' },
-        { id: 36, name: 'PRAISE' },
-      ],
-    },
-    {
-      id: 12,
-      name: 'TEAM ZEBRA',
-      players: [
-        { id: 37, name: 'BRAXTVN' },
-        { id: 38, name: 'CLXP' },
-        { id: 39, name: 'RYDA' },
-      ],
-    },
-    {
-      id: 13,
-      name: 'ORGLESS',
-      players: [
-        { id: 40, name: 'EMPATHY' },
-        { id: 41, name: 'INTECHS' },
-        { id: 42, name: 'NATEDOGG' },
-      ],
-    },
-    {
-      id: 14,
-      name: 'EKLETYC',
-      players: [
-        { id: 43, name: 'ISFREDDY' },
-        { id: 44, name: 'KIBEYZ' },
-        { id: 45, name: 'ZANX' },
-      ],
-    },
-    {
-      id: 15,
-      name: 'RVX',
-      players: [
-        { id: 46, name: 'RESOLVE' },
-        { id: 47, name: 'VXLCOM' },
-        { id: 48, name: 'XTRAJ' },
-      ],
-    },
-  ]
-
+  const [teams, setTeams] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [selectedTeam, setSelectedTeam] = useState(null)
-  const imageCacheRef = useRef({})
 
-  // 🔥 Preload ALL player images on page load
   useEffect(() => {
-    const allPlayers = teams.flatMap((team) => team.players)
+    let cancelled = false
 
-    allPlayers.forEach((player) => {
-      const img = new Image()
-      const imageUrl = getPlayerImage(player.name)
+    const loadOrganizations = async () => {
+      setLoading(true)
+      setError('')
 
-      img.onload = () => {
-        imageCacheRef.current[player.name] = imageUrl
+      try {
+        const rows = await fetchRows('organizations', {
+          select: 'id,org_name,player_1,player_2,player_3',
+          order: { column: 'org_name', ascending: true },
+        })
+
+        const mappedTeams = (rows || []).map((org) => ({
+          id: org.id,
+          name: org.org_name || 'Unknown Org',
+          players: [org.player_1, org.player_2, org.player_3]
+            .filter(Boolean)
+            .map((playerName, index) => ({
+              id: `${org.id}-${index + 1}`,
+              name: playerName,
+            })),
+        }))
+
+        if (!cancelled) {
+          setTeams(mappedTeams)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setTeams([])
+          setError(err.message || 'Failed to load organizations.')
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
+    }
 
-      img.onerror = () => {
-        imageCacheRef.current[player.name] = DEFAULT_IMAGE
-      }
+    loadOrganizations()
 
-      img.src = imageUrl
-    })
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   return (
@@ -189,20 +80,22 @@ function Team() {
       </div>
 
       <div className="players-container">
-        {selectedTeam ? (
+        {loading ? (
+          <p className="no-team-selected">Loading teams...</p>
+        ) : error ? (
+          <p className="no-team-selected">{error}</p>
+        ) : selectedTeam ? (
           <>
             <h2>{selectedTeam.name}</h2>
             <div className="players-grid">
               {selectedTeam.players.map((player) => (
                 <div key={player.id} className="player-card">
                   <img
-                    src={
-                      imageCacheRef.current[player.name] ||
-                      getPlayerImage(player.name)
-                    }
+                    src={getPlayerImage(player.name)}
                     alt=""
                     onError={(e) => {
-                      e.target.src = DEFAULT_IMAGE
+                      e.currentTarget.onerror = null
+                      e.currentTarget.src = DEFAULT_IMAGE
                     }}
                   />
                   <p>{player.name}</p>
@@ -210,10 +103,12 @@ function Team() {
               ))}
             </div>
           </>
-        ) : (
+        ) : teams.length ? (
           <p className="no-team-selected">
             Select a team to view players
           </p>
+        ) : (
+          <p className="no-team-selected">No teams found.</p>
         )}
       </div>
     </div>

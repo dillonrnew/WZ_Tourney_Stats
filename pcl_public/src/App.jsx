@@ -7,12 +7,14 @@ import TeamStatsTab from './pages/Left Bar Pages/TeamStatsTab'
 import IndividualTournament from './pages/IndividualTournament'
 import Finals from './pages/Major Tournament Pages/Finals'
 import GroupStages from './pages/Major Tournament Pages/GroupStages'
+import QualifiersPage from './pages/Major Tournament Pages/QualifiersPage'
+import AdminTournaments from './pages/AdminTournaments'
 import './App.css'
 import './styles/TournamentPage.css'
 
 function App() {
   const pages = [
-    { name: 'Tournaments', path: '/tournaments', icon: '目' },
+    { name: 'Tournaments', path: '/tournaments', icon: '🎯' },
     { name: 'Player Stats', path: '/player-stats', icon: '📊' },
     { name: 'Team Stats', path: '/team-stats', icon: '📈' },
     { name: 'Leaderboards', path: '/leaderboards', icon: '🏆' },
@@ -23,8 +25,7 @@ function App() {
     <Router>
       <div className="app-layout">
         <aside className="sidebar">
-          <div className="sidebar-logo">
-          </div>
+          <div className="sidebar-logo" />
 
           <nav className="sidebar-nav">
             {pages.map((page) => (
@@ -55,8 +56,10 @@ function App() {
             <Route path="/team-stats" element={<TeamStatsTab />} />
             <Route path="/leaderboards" element={<LeaderboardTab />} />
             <Route path="/teams" element={<MeetTheTeamsTab />} />
-            
+            <Route path="/admin/tournaments" element={<AdminTournaments />} />
+
             <Route path="/tournament/:id" element={<IndividualTournament />} />
+            <Route path="/tournament/:id/qualifiers" element={<QualifiersPage />} />
             <Route path="/tournament/:id/finals" element={<Finals />} />
             <Route path="/tournament/:id/GroupStages" element={<GroupStages />} />
           </Routes>

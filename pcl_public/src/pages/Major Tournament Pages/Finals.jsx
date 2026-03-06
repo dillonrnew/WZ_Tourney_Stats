@@ -1,8 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import Leaderboard from '../../components/Normal Tournament Components/TournamentLeaderboard'
-import PlayerStats from '../../components/Normal Tournament Components/TournamentPlayerStats'
-import TeamStats from '../../components/Normal Tournament Components/TournamentTeamStats'
+import TournamentStatsTab from '../../components/Normal Tournament Components/TournamentStatsTab'
 import MapWins from '../../components/Normal Tournament Components/TournamentMapWins'
 import '../../styles/Major Tournament Pages/Finals.css'
 
@@ -11,20 +10,19 @@ function Finals() {
   const [activeTab, setActiveTab] = useState('leaderboard')
   const [showPage, setShowPage] = useState(false)
 
-  const finalsName = `Pullze Check Ladder Finals ${id}`
+  const finalsName = `Pullze Check Ladder Finals`
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPage(true)
-    }, 500)
+    }, 750)
 
     return () => clearTimeout(timer)
   }, [])
 
   const tabs = [
     { key: 'leaderboard', label: 'Leaderboard' },
-    { key: 'player-stats', label: 'Player Stats' },
-    { key: 'team-stats', label: 'Team Stats' },
+    { key: 'stats', label: 'Stats' },
     { key: 'map-wins', label: 'Map Wins' },
   ]
 
@@ -55,12 +53,8 @@ function Finals() {
             <Leaderboard tournamentId={id} />
           </div>
 
-          <div style={{ display: activeTab === 'player-stats' ? 'block' : 'none' }}>
-            <PlayerStats tournamentId={id} />
-          </div>
-
-          <div style={{ display: activeTab === 'team-stats' ? 'block' : 'none' }}>
-            <TeamStats tournamentId={id} />
+          <div style={{ display: activeTab === 'stats' ? 'block' : 'none' }}>
+            <TournamentStatsTab tournamentId={id} />
           </div>
 
           <div style={{ display: activeTab === 'map-wins' ? 'block' : 'none' }}>

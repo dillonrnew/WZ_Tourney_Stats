@@ -19,48 +19,107 @@
   margin: 0 auto 42px;
 }
 
-.home-section__header {
-  margin-bottom: 18px;
+.tournaments-page-title {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: #f1f1f1;
 }
 
-/* Header row with anchored link */
-.home-section__header--row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  width: 100%;
-  position: relative; /* anchor context */
-  padding-bottom: 4px;
+/* ============ CATEGORY TABS ============ */
+.tournaments-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
-.header-center {
-  flex: 1;
+.tournaments-tab {
+  --tab-accent: rgba(255, 255, 255, 0.45);
+  appearance: none;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(20, 20, 20, 0.68);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.tournaments-tab__title {
+  color: #e4e4e4;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
   text-align: center;
 }
 
-/* Titles */
-.home-section__title {
-  font-size: 28px;
-  margin: 0 0 6px;
-  letter-spacing: 0.5px;
+.tournaments-tab__subtitle {
+  color: #a6a6a6;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
 }
 
-.home-section__subtitle {
-  margin: 0;
+.tournaments-tab--major {
+  --tab-accent: #2f6f8f;
+}
+
+.tournaments-tab--scrims {
+  --tab-accent: #8f6430;
+}
+
+.tournaments-tab--fun {
+  --tab-accent: #3d7a52;
+}
+
+.tournaments-tab:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--tab-accent) 45%, #ffffff 55%);
+}
+
+.tournaments-tab:hover .tournaments-tab__title {
+  color: #ffffff;
+}
+
+.tournaments-tab--active {
+  background: color-mix(in srgb, var(--tab-accent) 18%, rgba(10, 10, 10, 0.82));
+  border-color: var(--tab-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tab-accent) 40%, transparent);
+}
+
+.tournaments-tab--active .tournaments-tab__title {
+  color: #ffffff;
+}
+
+.tournaments-tab--active .tournaments-tab__subtitle {
+  color: #d2d2d2;
+}
+
+.category-empty {
+  text-align: center;
   color: #b8b8b8;
-  font-size: 14px;
+  background: rgba(12, 12, 12, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px;
 }
 
-/* Anchored link */
-.home-link {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+/* View-all link */
+.category-row-link {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
 
+.home-link {
   white-space: nowrap;
   color: #fff;
   text-decoration: none;
@@ -75,23 +134,43 @@
   border-bottom-color: rgba(255, 255, 255, 0.55);
 }
 
-/* ============ MAJOR TOURNAMENTS GRID ============ */
-.home-grid {
+/* ============ COMBINED CARDS GRID ============ */
+.category-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
 @media (max-width: 1020px) {
-  .home-grid {
+  .category-cards-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 680px) {
-  .home-grid {
+  .category-cards-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.category-card {
+  --card-accent: rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--card-accent);
+  border-radius: 16px;
+  padding: 2px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--card-accent) 40%, transparent);
+}
+
+.category-card--major {
+  --card-accent: #2f6f8f;
+}
+
+.category-card--scrims {
+  --card-accent: #8f6430;
+}
+
+.category-card--fun {
+  --card-accent: #3d7a52;
 }
 
 /* ============ TOURNAMENT CARD ============ */
@@ -173,19 +252,7 @@
   text-decoration: none;
 }
 
-/* ============ SCRIMS GRID ============ */
-.scrims-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-
-@media (max-width: 900px) {
-  .scrims-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ============ SCRIM/FUN CARD ============ */
 .scrim-card {
   background: rgba(16, 16, 16, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -224,9 +291,22 @@
   gap: 12px;
 }
 
+.scrim-card__metaText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+}
+
 .scrim-card__time {
   font-size: 12px;
   color: #b8b8b8;
+}
+
+.scrim-card__date {
+  font-size: 12px;
+  color: #d0d0d0;
 }
 
 .scrim-card__btn {
@@ -243,4 +323,10 @@
 .scrim-card__btn:hover {
   background: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .tournaments-tabs {
+    grid-template-columns: 1fr;
+  }
 }

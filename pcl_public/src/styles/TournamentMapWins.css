@@ -29,6 +29,7 @@
 }
 
 .map-header-team,
+.map-header-logo,
 .map-header-kills {
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -41,9 +42,15 @@
   text-align: left;
 }
 
+.map-header-logo {
+  width: 50px;
+  margin-left: 25px;
+  text-align: center;
+}
+
 .map-header-kills {
   width: 60px;
-  margin-left: 25px;
+  margin-left: 0;
   text-align: center;
 }
 
@@ -126,11 +133,27 @@
   margin-top: 6px; /* slightly more spacing */
 }
 
+.map-logo-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 25px; /* more spacing */
+  flex-shrink: 0;
+  width: 50px;
+}
+
+.map-team-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  display: block;
+}
+
 .map-kills-info {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-left: 25px; /* more spacing */
+  margin-left: 0;
   flex-shrink: 0;
   width: 60px;
 }

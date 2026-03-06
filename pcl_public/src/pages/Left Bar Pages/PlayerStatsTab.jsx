@@ -1,95 +1,279 @@
 // src/components/PlayerStatsTab.jsx
-import { useMemo, useState } from "react"
+import { memo, useDeferredValue, useEffect, useMemo, useState } from "react"
+import { fetchRows } from "../../lib/supabaseRest"
 import "../../styles/Left Bar Pages/PlayerStatsTab.css"
 
 /* =========================
    HEADSHOT IMAGE HELPERS
    ========================= */
 const BASE_IMAGE_URL =
-  "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Shoulders%20Up%20Pictures"
+  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots"
 const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 const DEFAULT_TEAM_LOGO =
-  "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
-const getPlayerImage = () => DEFAULT_IMAGE
+  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
+const getPlayerImage = (playerName) =>
+  playerName ? `${BASE_IMAGE_URL}/${encodeURIComponent(playerName)}.png` : DEFAULT_IMAGE
+const getOrgLogo = (orgName) =>
+  orgName
+    ? `https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/${encodeURIComponent(orgName)}.png`
+    : DEFAULT_TEAM_LOGO
+const normalizeName = (name) => String(name || "").trim().toLowerCase()
+const DISPLAY_LIMIT = 25
 
-/* =========================
-   PLAYER DATA (demo)
-   ========================= */
-const playersData = [
-  {
-    playerId: "p1",
-    name: "BLAZT",
-    orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/AG%20GLOBAL.png",
-    kills: 155,
-    mapWins: 22,
-    tourneyWins: 1,
-  },
-  {
-    playerId: "p2",
-    name: "SAGE",
-    orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/EKLETYC.png",
-    kills: 148,
-    mapWins: 20,
-    tourneyWins: 4,
-  },
-  {
-    playerId: "p3",
-    name: "SKULLFACE",
-    orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/ESC.png",
-    kills: 141,
-    mapWins: 18,
-    tourneyWins: 3,
-  },
-  {
-    playerId: "p4",
-    name: "ECHO",
-    orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/GEN.G.png",
-    kills: 136,
-    mapWins: 16,
-    tourneyWins: 2,
-  },
-]
+const PlayerStatCard = memo(function PlayerStatCard({ row, player, rank }) {
+  const rankClass = rank <= 5 ? `PlayerStatsTab__card--rank${rank}` : ""
+
+  return (
+    <div className={`PlayerStatsTab__card PlayerStatsTab__card--player ${rankClass}`}>
+      <div className="PlayerStatsTab__rank">{rank}</div>
+
+      <img
+        className="PlayerStatsTab__headshot"
+        src={getPlayerImage(player?.name)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onError={(e) => {
+          e.currentTarget.src = DEFAULT_IMAGE
+        }}
+      />
+
+      <div className="PlayerStatsTab__name">{player?.name || "Unknown"}</div>
+
+      <img
+        className="PlayerStatsTab__orgLogo"
+        src={player?.orgLogo || DEFAULT_TEAM_LOGO}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        onError={(e) => {
+          e.currentTarget.onerror = null
+          e.currentTarget.src = DEFAULT_TEAM_LOGO
+        }}
+      />
+
+      <div className="PlayerStatsTab__value">{row.value}</div>
+    </div>
+  )
+})
+
+const StatsColumn = memo(function StatsColumn({
+  title,
+  rows,
+  visibleRows,
+  statKey,
+  ranks,
+  search,
+  visibleCount,
+  setVisibleCount,
+  playerById,
+}) {
+  const showMore = !search.trim() && visibleRows.length < rows.length
+  const showLess = !search.trim() && visibleCount[statKey] > DISPLAY_LIMIT
+
+  return (
+    <div className="PlayerStatsTab__colInner">
+      <h3 className="PlayerStatsTab__columnTitle">{title}</h3>
+
+      <div className="PlayerStatsTab__list">
+        {visibleRows.map((row) => {
+          const player = playerById.get(row.playerId)
+          const rank = ranks.get(row.playerId) ?? 0
+
+          return (
+            <PlayerStatCard
+              key={`${statKey}-${row.playerId}`}
+              row={row}
+              player={player}
+              rank={rank}
+            />
+          )
+        })}
+        {!visibleRows.length && <div className="PlayerStatsTab__card">No results</div>}
+      </div>
+      {showMore && (
+        <button
+          type="button"
+          onClick={() =>
+            setVisibleCount((prev) => ({
+              ...prev,
+              [statKey]: prev[statKey] + DISPLAY_LIMIT,
+            }))
+          }
+        >
+          Show more
+        </button>
+      )}
+      {showLess && (
+        <button
+          type="button"
+          onClick={() =>
+            setVisibleCount((prev) => ({
+              ...prev,
+              [statKey]: DISPLAY_LIMIT,
+            }))
+          }
+        >
+          Show less
+        </button>
+      )}
+    </div>
+  )
+})
 
 function PlayerStatsTab() {
   const [search, setSearch] = useState("")
+  const [visibleCount, setVisibleCount] = useState({
+    kills: DISPLAY_LIMIT,
+    mapWins: DISPLAY_LIMIT,
+    tourneyWins: DISPLAY_LIMIT,
+  })
+  const [playersData, setPlayersData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const deferredSearch = useDeferredValue(search)
+
+  useEffect(() => {
+    let cancelled = false
+
+    const loadPlayerStats = async () => {
+      setLoading(true)
+      setError("")
+
+      try {
+        const [totalKills, mapWins, tournamentWins, organizations] = await Promise.all([
+          fetchRows("individual_total_kills", { select: "player_name,total_kills" }),
+          fetchRows("individual_map_wins", { select: "player_name,total_wins" }),
+          fetchRows("individual_tournament_wins", { select: "player_name,total_wins" }),
+          fetchRows("organizations", { select: "org_name,player_1,player_2,player_3" }),
+        ])
+
+        const playersByKey = new Map()
+
+        const ensurePlayer = (playerName) => {
+          const name = String(playerName || "").trim()
+          const key = normalizeName(name)
+          if (!key) return null
+
+          if (!playersByKey.has(key)) {
+            playersByKey.set(key, {
+              playerId: key,
+              name,
+              orgName: "",
+              kills: 0,
+              mapWins: 0,
+              tourneyWins: 0,
+            })
+          }
+
+          return playersByKey.get(key)
+        }
+
+        ;(totalKills || []).forEach((row) => {
+          const player = ensurePlayer(row.player_name)
+          if (!player) return
+          player.kills += Number(row.total_kills || 0)
+        })
+
+        ;(mapWins || []).forEach((row) => {
+          const player = ensurePlayer(row.player_name)
+          if (!player) return
+          player.mapWins += Number(row.total_wins || 0)
+        })
+
+        ;(tournamentWins || []).forEach((row) => {
+          const player = ensurePlayer(row.player_name)
+          if (!player) return
+          player.tourneyWins += Number(row.total_wins || 0)
+        })
+
+        ;(organizations || []).forEach((org) => {
+          ;[org.player_1, org.player_2, org.player_3].forEach((playerName) => {
+            const key = normalizeName(playerName)
+            if (!key) return
+            const player = playersByKey.get(key)
+            if (!player) return
+            if (!player.orgName && org.org_name) {
+              player.orgName = org.org_name
+            }
+          })
+        })
+
+        const nextPlayers = Array.from(playersByKey.values()).map((player) => ({
+          ...player,
+          orgLogo: getOrgLogo(player.orgName),
+        }))
+
+        if (!cancelled) {
+          setPlayersData(nextPlayers)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setPlayersData([])
+          setError(err.message || "Failed to load player stats.")
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadPlayerStats()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Map for quick lookup (stable)
   const playerById = useMemo(() => {
     const map = new Map()
     playersData.forEach((p) => map.set(p.playerId, p))
     return map
-  }, [])
+  }, [playersData])
 
   /**
    * 1) Build rankings ONCE from the full, non-searched list.
    *    These arrays are the "source of truth" for order & rank numbers.
    */
   const rankedColumns = useMemo(() => {
+    const allKills = [...playersData]
+      .sort((a, b) => b.kills - a.kills)
+      .map((p) => ({ playerId: p.playerId, value: p.kills }))
+
+    const allMapWins = [...playersData]
+      .sort((a, b) => b.mapWins - a.mapWins)
+      .map((p) => ({ playerId: p.playerId, value: p.mapWins }))
+
+    const allTourneyWins = [...playersData]
+      .sort((a, b) => b.tourneyWins - a.tourneyWins)
+      .map((p) => ({ playerId: p.playerId, value: p.tourneyWins }))
+
     const kills = [...playersData]
+      .filter((p) => Number(p.kills || 0) > 0)
       .sort((a, b) => b.kills - a.kills)
       .map((p) => ({ playerId: p.playerId, value: p.kills }))
 
     const mapWins = [...playersData]
+      .filter((p) => Number(p.mapWins || 0) > 0)
       .sort((a, b) => b.mapWins - a.mapWins)
       .map((p) => ({ playerId: p.playerId, value: p.mapWins }))
 
     const tourneyWins = [...playersData]
+      .filter((p) => Number(p.tourneyWins || 0) > 0)
       .sort((a, b) => b.tourneyWins - a.tourneyWins)
       .map((p) => ({ playerId: p.playerId, value: p.tourneyWins }))
 
-    return { kills, mapWins, tourneyWins }
-  }, [])
+    return { kills, mapWins, tourneyWins, allKills, allMapWins, allTourneyWins }
+  }, [playersData])
 
   /**
    * 2) Search should NOT change order/ranks.
    *    So we filter the ranked lists, keeping original indices as rank.
    */
   const filteredColumns = useMemo(() => {
-    const q = search.trim().toLowerCase()
+    const q = deferredSearch.trim().toLowerCase()
     if (!q) return rankedColumns
 
     const matches = new Set(
@@ -101,11 +285,25 @@ function PlayerStatsTab() {
     const filterRows = (rows) => rows.filter((r) => matches.has(r.playerId))
 
     return {
-      kills: filterRows(rankedColumns.kills),
-      mapWins: filterRows(rankedColumns.mapWins),
-      tourneyWins: filterRows(rankedColumns.tourneyWins),
+      kills: filterRows(rankedColumns.allKills),
+      mapWins: filterRows(rankedColumns.allMapWins),
+      tourneyWins: filterRows(rankedColumns.allTourneyWins),
     }
-  }, [search, rankedColumns])
+  }, [playersData, deferredSearch, rankedColumns])
+
+  const visibleColumns = useMemo(() => {
+    const q = search.trim()
+    const applyLimit = (rows, key) => {
+      if (q) return rows
+      return rows.slice(0, visibleCount[key])
+    }
+
+    return {
+      kills: applyLimit(filteredColumns.kills, "kills"),
+      mapWins: applyLimit(filteredColumns.mapWins, "mapWins"),
+      tourneyWins: applyLimit(filteredColumns.tourneyWins, "tourneyWins"),
+    }
+  }, [filteredColumns, search, visibleCount])
 
   /**
    * 3) Precompute ORIGINAL rank per stat based on the full list
@@ -114,67 +312,26 @@ function PlayerStatsTab() {
   const rankByStat = useMemo(() => {
     const buildRankMap = (rows) => {
       const m = new Map()
-      rows.forEach((row, idx) => m.set(row.playerId, idx + 1))
+      let previousValue = null
+      let currentRank = 0
+
+      rows.forEach((row, idx) => {
+        const value = Number(row.value || 0)
+        if (idx === 0 || value !== previousValue) {
+          currentRank = idx + 1
+          previousValue = value
+        }
+        m.set(row.playerId, currentRank)
+      })
       return m
     }
 
     return {
-      kills: buildRankMap(rankedColumns.kills),
-      mapWins: buildRankMap(rankedColumns.mapWins),
-      tourneyWins: buildRankMap(rankedColumns.tourneyWins),
+      kills: buildRankMap(rankedColumns.allKills),
+      mapWins: buildRankMap(rankedColumns.allMapWins),
+      tourneyWins: buildRankMap(rankedColumns.allTourneyWins),
     }
   }, [rankedColumns])
-
-  const renderColumn = (title, rows, statKey) => {
-    const ranks = rankByStat[statKey]
-
-    return (
-      <div className="PlayerStatsTab__colInner">
-        <h3 className="PlayerStatsTab__columnTitle">{title}</h3>
-
-        <div className="PlayerStatsTab__list">
-          {rows.map((row) => {
-            const player = playerById.get(row.playerId)
-            const rank = ranks.get(row.playerId) ?? 0
-
-            const rankClass = rank <= 5 ? `PlayerStatsTab__card--rank${rank}` : ""
-
-            return (
-              <div
-                key={`${statKey}-${row.playerId}`}
-                className={`PlayerStatsTab__card ${rankClass}`}
-              >
-                <div className="PlayerStatsTab__rank">{rank}</div>
-
-                {/* Player headshot (Supabase, fallback-safe) */}
-                <img
-                  className="PlayerStatsTab__headshot"
-                  src={getPlayerImage(player?.name)}
-                  alt={player?.name || ""}
-                  onError={(e) => {
-                    e.currentTarget.src = DEFAULT_IMAGE
-                  }}
-                />
-
-                {/* Org logo */}
-                <img
-                  className="PlayerStatsTab__orgLogo"
-                  src={DEFAULT_TEAM_LOGO}
-                  alt=""
-                />
-
-                <div className="PlayerStatsTab__name">
-                  {player?.name || "Unknown"}
-                </div>
-
-                <div className="PlayerStatsTab__value">{row.value}</div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="PlayerStatsTab">
@@ -190,21 +347,66 @@ function PlayerStatsTab() {
         />
       </div>
 
-      <div className="PlayerStatsTab__split">
-        <div className="PlayerStatsTab__col">
-          {renderColumn("Individual Kills", filteredColumns.kills, "kills")}
+      {loading ? (
+        <div className="PlayerStatsTab__split">
+          <div className="PlayerStatsTab__col">Loading player stats...</div>
         </div>
+      ) : error ? (
+        <div className="PlayerStatsTab__split">
+          <div className="PlayerStatsTab__col">{error}</div>
+        </div>
+      ) : !playersData.length ? (
+        <div className="PlayerStatsTab__split">
+          <div className="PlayerStatsTab__col">No player stats found.</div>
+        </div>
+      ) : (
+        <div className="PlayerStatsTab__split">
+          <div className="PlayerStatsTab__col">
+            <StatsColumn
+              title="Individual Kills"
+              rows={filteredColumns.kills}
+              visibleRows={visibleColumns.kills}
+              statKey="kills"
+              ranks={rankByStat.kills}
+              search={search}
+              visibleCount={visibleCount}
+              setVisibleCount={setVisibleCount}
+              playerById={playerById}
+            />
+          </div>
 
-        <div className="PlayerStatsTab__col">
-          {renderColumn("Map Wins", filteredColumns.mapWins, "mapWins")}
-        </div>
+          <div className="PlayerStatsTab__col">
+            <StatsColumn
+              title="Map Wins"
+              rows={filteredColumns.mapWins}
+              visibleRows={visibleColumns.mapWins}
+              statKey="mapWins"
+              ranks={rankByStat.mapWins}
+              search={search}
+              visibleCount={visibleCount}
+              setVisibleCount={setVisibleCount}
+              playerById={playerById}
+            />
+          </div>
 
-        <div className="PlayerStatsTab__col">
-          {renderColumn("Tourney Wins", filteredColumns.tourneyWins, "tourneyWins")}
+          <div className="PlayerStatsTab__col">
+            <StatsColumn
+              title="Tourney Wins"
+              rows={filteredColumns.tourneyWins}
+              visibleRows={visibleColumns.tourneyWins}
+              statKey="tourneyWins"
+              ranks={rankByStat.tourneyWins}
+              search={search}
+              visibleCount={visibleCount}
+              setVisibleCount={setVisibleCount}
+              playerById={playerById}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
 
 export default PlayerStatsTab
+

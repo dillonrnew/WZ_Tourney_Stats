@@ -3,7 +3,7 @@ import { useMemo, useState } from "react"
 import "../../styles/Left Bar Pages/TeamStatsTab.css"
 
 const DEFAULT_TEAM_LOGO =
-  "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
+  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
 
 /* =========================
    TEAM DATA (demo)
@@ -13,7 +13,7 @@ const teamsData = [
     teamId: "t1",
     players: ["BLAZT", "SAGE", "ECHO"],
     orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/AG%20GLOBAL.png",
+      "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/AG%20GLOBAL.png",
     kills: 410,
     mapWins: 32,
     tourneyWins: 3,
@@ -23,7 +23,7 @@ const teamsData = [
     teamId: "t2",
     players: ["SKULLFACE", "ECHO", "SAGE"],
     orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/ESC.png",
+      "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/ESC.png",
     kills: 395,
     mapWins: 29,
     tourneyWins: 2,
@@ -33,7 +33,7 @@ const teamsData = [
     teamId: "t3",
     players: ["BLAZT", "SKULLFACE", "SAGE"],
     orgLogo:
-      "https://cszyqguhwvxnkozuyldj.supabase.co/storage/v1/object/public/Org%20Logos/EKLETYC.png",
+      "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/EKLETYC.png",
     kills: 372,
     mapWins: 27,
     tourneyWins: 1,
@@ -123,8 +123,12 @@ function TeamStatsTab() {
 
                 <img
                   className="TeamStatsTab__orgLogo"
-                  src={DEFAULT_TEAM_LOGO}
+                  src={team?.orgLogo || DEFAULT_TEAM_LOGO}
                   alt=""
+                  onError={(e) => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = DEFAULT_TEAM_LOGO
+                  }}
                 />
 
                 <div className="TeamStatsTab__name">

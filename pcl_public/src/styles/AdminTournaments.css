@@ -1,0 +1,127 @@
+.admin-tournaments {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+  color: #f4f4f4;
+}
+
+.admin-tournaments,
+.admin-tournaments * {
+  box-sizing: border-box;
+}
+
+.admin-tournaments__header h1 {
+  margin: 0 0 8px;
+  font-size: 1.8rem;
+}
+
+.admin-tournaments__header p {
+  margin: 0 0 20px;
+  opacity: 0.85;
+}
+
+.admin-tournaments__form {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  background: #161616;
+  overflow-x: hidden;
+}
+
+.admin-field {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-field span {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.admin-field input,
+.admin-field select {
+  width: 100%;
+  max-width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  background: #1f1f1f;
+  color: #f4f4f4;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.admin-actions button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+  background: #6ec7ff;
+  color: #0f1720;
+  font-weight: 700;
+}
+
+.admin-actions__secondary {
+  background: #353535 !important;
+  color: #f4f4f4 !important;
+}
+
+.admin-actions button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.admin-message {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.admin-message--error {
+  color: #ff9f9f;
+}
+
+.admin-message--success {
+  color: #98f0a4;
+}
+
+.admin-tournaments__list {
+  margin-top: 18px;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  background: #161616;
+  padding: 16px;
+}
+
+.admin-tournaments__list h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.admin-tournaments__list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-tournaments__list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #2c2c2c;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.admin-tournaments__list code {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
