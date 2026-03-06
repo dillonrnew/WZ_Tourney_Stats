@@ -936,7 +936,7 @@ function QualifiersPage({ initialSection = "qualifiers" }) {
             <h2 className="qp-section-title">Group Stages</h2>
             <p className="qp-section-subtitle">
               <span className="qp-section-subtitle-text">
-                Two weeks of group-stage matchups.
+                Two weeks of group-stage matchups. Top 16 advance to Finals. Bottom 8 are eliminated.
               </span>
             </p>
 
