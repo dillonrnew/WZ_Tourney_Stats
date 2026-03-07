@@ -288,6 +288,25 @@ function Leaderboard({ tournamentId }) {
     }
   }, [tournamentId])
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !teams.length) return
+
+    const imageUrls = new Set()
+    teams.forEach((team) => {
+      imageUrls.add(getTeamImage(team.name))
+      team.playerCards.forEach((player) => {
+        imageUrls.add(getPlayerImage(player.name))
+      })
+    })
+
+    const preloadedImages = []
+    imageUrls.forEach((src) => {
+      const image = new Image()
+      image.src = src
+      preloadedImages.push(image)
+    })
+  }, [teams])
+
   const splitIndex = useMemo(() => Math.ceil(teams.length / 2), [teams])
   const leftColumn = teams.slice(0, splitIndex)
   const rightColumn = teams.slice(splitIndex)
@@ -321,6 +340,7 @@ function Leaderboard({ tournamentId }) {
           <div key={team.id} className="leaderboard-team-group">
             <div
               className={`leaderboard-row leaderboard-row--team ${isExpanded ? 'leaderboard-row--expanded' : ''}`}
+              aria-expanded={isExpanded}
               onClick={() => {
                 setExpandedTeamId((prev) => (prev === team.id ? null : team.id))
               }}
@@ -349,7 +369,9 @@ function Leaderboard({ tournamentId }) {
               <div className="team-score">{formatScore(team.score)}</div>
             </div>
 
-            {isExpanded && (
+            <div
+              className={`team-maps-panel-wrapper ${isExpanded ? 'team-maps-panel-wrapper--open' : ''}`}
+            >
               <div className="team-maps-panel">
                 <div className="team-player-strip">
                   {team.playerCards.map((player, playerIndex) => (
@@ -402,7 +424,7 @@ function Leaderboard({ tournamentId }) {
                   <div className="team-maps-empty">No maps found for this team.</div>
                 )}
               </div>
-            )}
+            </div>
           </div>
         )
       })}

@@ -123,6 +123,21 @@
   margin-top: 0;
 }
 
+.team-maps-panel-wrapper {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-8px);
+  transition: max-height 620ms ease, opacity 500ms ease, transform 620ms ease;
+  will-change: max-height, opacity, transform;
+}
+
+.team-maps-panel-wrapper--open {
+  max-height: 2200px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .team-player-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
