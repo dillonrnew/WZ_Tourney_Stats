@@ -25,6 +25,52 @@ const toNumber = (value) => {
   return Number.isFinite(parsed) ? parsed : 0
 }
 
+const sortDescending = (a, b) => b.value - a.value || a.name.localeCompare(b.name)
+
+const sortAscending = (a, b) => a.value - b.value || a.name.localeCompare(b.name)
+
+const mergeRowsById = (rows, sortFn) => {
+  const merged = new Map()
+
+  rows.forEach((row) => {
+    const existing = merged.get(row.id)
+    if (existing) {
+      existing.value += row.value
+      return
+    }
+
+    merged.set(row.id, { ...row })
+  })
+
+  return Array.from(merged.values()).sort(sortFn)
+}
+
+const averageRowsById = (rows) => {
+  const merged = new Map()
+
+  rows.forEach((row) => {
+    const existing = merged.get(row.id)
+    if (existing) {
+      existing.total += row.value
+      existing.count += 1
+      return
+    }
+
+    merged.set(row.id, {
+      row: { ...row },
+      total: row.value,
+      count: 1,
+    })
+  })
+
+  return Array.from(merged.values())
+    .map(({ row, total, count }) => ({
+      ...row,
+      value: total / count,
+    }))
+    .sort(sortAscending)
+}
+
 const getTeamLogo = (teamName) =>
   teamName ? `${ORG_LOGO_BASE}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_LOGO
 
@@ -109,8 +155,13 @@ function TeamStatsTab() {
           const normalizedTeamName = normalizeText(teamName)
           const info = teamByName.get(normalizedTeamName)
           const fallbackName = String(teamName || "Unknown Team")
+          const canonicalRosterKey = info ? rosterKey(info.players) : ""
+          const canonicalId = canonicalRosterKey
+            ? `roster:${canonicalRosterKey}`
+            : info?.id || `team:${normalizedTeamName || fallbackName}`
+
           return {
-            id: info?.id || `team:${normalizedTeamName || fallbackName}`,
+            id: canonicalId,
             name: info?.name || fallbackName,
             players: info?.players || [fallbackName],
             orgLogo: info?.orgLogo || getTeamLogo(fallbackName),
@@ -118,8 +169,8 @@ function TeamStatsTab() {
           }
         }
 
-        const nextKills = (totalKillsRows || [])
-          .map((row) => {
+        const nextKills = mergeRowsById(
+          (totalKillsRows || []).map((row) => {
             const players = [row.player_1, row.player_2, row.player_3]
               .filter(Boolean)
               .map((player) => String(player).trim())
@@ -132,24 +183,31 @@ function TeamStatsTab() {
               orgLogo: info?.orgLogo || DEFAULT_TEAM_LOGO,
               value: toNumber(row.total_kills),
             }
-          })
-          .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
+          }),
+          sortDescending
+        )
 
-        const nextMapWins = (mapWinsRows || [])
-          .map((row) => buildRowFromTeamName(row.team_name, row.team_map_wins))
-          .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
+        const nextMapWins = mergeRowsById(
+          (mapWinsRows || []).map((row) => buildRowFromTeamName(row.team_name, row.team_map_wins)),
+          sortDescending
+        )
 
-        const nextTourneyWins = (tourneyWinsRows || [])
-          .map((row) => buildRowFromTeamName(row.team_name, row.team_tourney_wins))
-          .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name))
+        const nextTourneyWins = mergeRowsById(
+          (tourneyWinsRows || []).map((row) =>
+            buildRowFromTeamName(row.team_name, row.team_tourney_wins)
+          ),
+          sortDescending
+        )
         const totalTeamTourneyWins = nextTourneyWins.reduce(
           (sum, row) => sum + Number(row.value || 0),
           0
         )
 
-        const nextAvgPlacement = (avgPlacementRows || [])
-          .map((row) => buildRowFromTeamName(row.team_name, row.team_avg_placement))
-          .sort((a, b) => a.value - b.value || a.name.localeCompare(b.name))
+        const nextAvgPlacement = averageRowsById(
+          (avgPlacementRows || []).map((row) =>
+            buildRowFromTeamName(row.team_name, row.team_avg_placement)
+          )
+        )
 
         if (!cancelled) {
           console.log("[TeamStatsTab] Total team tournament wins:", totalTeamTourneyWins)

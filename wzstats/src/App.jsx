@@ -17,6 +17,8 @@ import './styles/TournamentPage.css'
 function AppShell() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const location = useLocation()
+  const isStandaloneTierRoute =
+    location.pathname === '/tier-list-lab' || location.pathname === '/tier-list-lab/'
   const pages = [
     { name: 'Tournaments', path: '/tournaments', icon: 'T' },
     { name: 'Player Stats', path: '/player-stats', icon: 'P' },
@@ -25,11 +27,12 @@ function AppShell() {
     { name: 'Meet The Teams', path: '/teams', icon: 'M' },
   ]
 
-  if (location.pathname === '/tier-list-lab') {
+  if (isStandaloneTierRoute) {
     return (
       <main className="page-content page-content--standalone">
         <Routes>
           <Route path="/tier-list-lab" element={<StandaloneTierListPage />} />
+          <Route path="/tier-list-lab/" element={<StandaloneTierListPage />} />
         </Routes>
       </main>
     )
