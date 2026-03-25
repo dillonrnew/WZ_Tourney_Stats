@@ -42,3 +42,8 @@ body,
 .read-the-docs {
   color: #888;
 }
+
+.page-content--standalone {
+  width: 100%;
+  min-height: 100vh;
+}
