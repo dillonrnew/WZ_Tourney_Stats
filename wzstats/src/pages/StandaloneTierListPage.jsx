@@ -50,7 +50,7 @@ const INITIAL_ITEMS = [
   { id: 'team-29', players: ['EMPATHY', 'INTECHS', 'NATEDOGG'], accent: '#f87171' },
   { id: 'team-30', players: ['FREDDYY', 'KIBEYZ', 'ZANX'], accent: '#facc15' },
   { id: 'team-31', players: ['ORLAND', 'PIO', 'SAVYULTRAS'], accent: '#34d399' },
-  { id: 'team-32', players: ['LAWLET', 'SUCRE', 'TENUX'], accent: '#818cf8' },
+  { id: 'team-32', players: ['ELOLAM', 'SUCRE', 'TENUX'], accent: '#818cf8' },
   { id: 'team-33', players: ['CONALL', 'CONTROLDEC', 'IVFIREE'], accent: '#e879f9' },
   { id: 'team-34', players: ['HAVOC', 'MLLSY', 'SKINNER'], accent: '#0ea5e9' },
   { id: 'team-35', players: ['ABWIZZ', 'ENXIUN', 'ZACHAR'], accent: '#f97316' },
