@@ -186,6 +186,7 @@
   font-size: 0.71rem;
   font-weight: 700;
   line-height: 1.15;
+  text-transform: uppercase;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -235,6 +236,7 @@
   margin: 0;
   font-size: 1.3rem;
   line-height: 1.15;
+  text-transform: uppercase;
 }
 
 .standalone-tier-sidebar__subhead {
@@ -316,6 +318,7 @@
   color: #e2e8f0;
   font-size: 0.96rem;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
 .standalone-tier-sidebar__player-copy {

@@ -8,7 +8,9 @@ function Team() {
   const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 
   const getPlayerImage = (playerName) =>
-    playerName ? `${BASE_IMAGE_URL}/${encodeURIComponent(playerName)}.png` : DEFAULT_IMAGE
+    playerName
+      ? `${BASE_IMAGE_URL}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
+      : DEFAULT_IMAGE
 
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(true)

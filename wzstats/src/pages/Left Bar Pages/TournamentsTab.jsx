@@ -42,7 +42,12 @@ function Home() {
   const majorTournaments = [
     {
       id: "820d3233-098e-45b4-a59c-67a03021df41",
-      name: "Pullze Check Ladder",
+      name: "Pullze Check Ladder Season 1",
+      image: "https://pbs.twimg.com/profile_banners/1621275827051560960/1757431756/1500x500",
+    },
+    {
+      id: "db57b67e-95ca-4c39-ae16-b7da5460d1b7",
+      name: "Pullze Check Ladder Season 2",
       image: "https://pbs.twimg.com/profile_banners/1621275827051560960/1757431756/1500x500",
     },
   ];
@@ -52,6 +57,11 @@ function Home() {
       { id: 1, title: "Qualifiers", to: "/tournament/820d3233-098e-45b4-a59c-67a03021df41/qualifiers" },
       { id: 2, title: "Group Stages", to: "/tournament/820d3233-098e-45b4-a59c-67a03021df41/GroupStages" },
       { id: 3, title: "Finals", to: "/tournament/820d3233-098e-45b4-a59c-67a03021df41/finals" },
+    ],
+    "db57b67e-95ca-4c39-ae16-b7da5460d1b7": [
+      { id: 1, title: "Qualifiers", to: "/pcl-season-2/db57b67e-95ca-4c39-ae16-b7da5460d1b7/qualifiers" },
+      { id: 2, title: "Group Stages", to: "/pcl-season-2/db57b67e-95ca-4c39-ae16-b7da5460d1b7/GroupStages" },
+      { id: 3, title: "Finals", to: "/pcl-season-2/db57b67e-95ca-4c39-ae16-b7da5460d1b7/finals" },
     ],
   };
 

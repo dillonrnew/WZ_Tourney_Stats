@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
 import { fetchRows } from "../../lib/supabaseRest"
+import {
+  fetchAvgPlacementView,
+  fetchMapWinsView,
+  fetchTeamKillsView,
+  fetchTourneyWinsView,
+} from "../../lib/teamStatViews"
 import "../../styles/Left Bar Pages/TeamStatsTab.css"
 
 const DEFAULT_TEAM_LOGO =
@@ -99,24 +105,21 @@ function TeamStatsTab() {
       setError("")
 
       try {
-        const [teamInfoRows, mapWinsRows, tourneyWinsRows, avgPlacementRows, totalKillsRows] =
+        const [teamInfoRows, mapWinsResult, tourneyWinsResult, avgPlacementResult, totalKillsResult] =
           await Promise.all([
             fetchRows("team_info_view", {
               select: "updated_team_name,updated_player_1,updated_player_2,updated_player_3",
             }),
-            fetchRows("team_map_wins", {
-              select: "team_name,team_map_wins",
-            }),
-            fetchRows("team_tourney_wins", {
-              select: "team_name,team_tourney_wins",
-            }),
-            fetchRows("team_avg_placement", {
-              select: "team_name,team_avg_placement",
-            }),
-            fetchRows("team_total_kills", {
-              select: "player_1,player_2,player_3,total_kills",
-            }),
+            fetchMapWinsView(),
+            fetchTourneyWinsView(),
+            fetchAvgPlacementView(),
+            fetchTeamKillsView(),
           ])
+
+        const mapWinsRows = mapWinsResult?.rows || []
+        const tourneyWinsRows = tourneyWinsResult?.rows || []
+        const avgPlacementRows = avgPlacementResult?.rows || []
+        const totalKillsRows = totalKillsResult?.rows || []
 
         const teamByName = new Map()
         const teamByRoster = new Map()
@@ -169,33 +172,62 @@ function TeamStatsTab() {
           }
         }
 
+        const buildRowFromRoster = (players, teamName, value) => {
+          const cleanedPlayers = (players || [])
+            .filter(Boolean)
+            .map((player) => String(player).trim())
+          const key = rosterKey(cleanedPlayers)
+          const info = key ? teamByRoster.get(key) : null
+          const fallbackName = String(teamName || cleanedPlayers.join(" | ") || "Unknown Team")
+          const displayPlayers =
+            info?.players || (cleanedPlayers.length ? cleanedPlayers : [fallbackName])
+
+          return {
+            id: key ? `roster:${key}` : `team:${normalizeText(fallbackName)}`,
+            name: info?.name || fallbackName,
+            players: displayPlayers,
+            orgLogo: info?.orgLogo || getTeamLogo(info?.name || teamName || ""),
+            value: toNumber(value),
+          }
+        }
+
         const nextKills = mergeRowsById(
-          (totalKillsRows || []).map((row) => {
-            const players = [row.player_1, row.player_2, row.player_3]
-              .filter(Boolean)
-              .map((player) => String(player).trim())
-            const key = rosterKey(players)
-            const info = teamByRoster.get(key)
-            return {
-              id: `roster:${key}`,
-              name: info?.name || players.join(" | ") || "Unknown Team",
-              players: info?.players || players,
-              orgLogo: info?.orgLogo || DEFAULT_TEAM_LOGO,
-              value: toNumber(row.total_kills),
-            }
-          }),
+          totalKillsRows.map((row) =>
+            buildRowFromRoster(
+              [row.player_1, row.player_2, row.player_3],
+              row.team_name,
+              row[totalKillsResult.valueField]
+            )
+          ),
           sortDescending
         )
 
         const nextMapWins = mergeRowsById(
-          (mapWinsRows || []).map((row) => buildRowFromTeamName(row.team_name, row.team_map_wins)),
+          mapWinsRows.map((row) => {
+            const hasRoster = row.player_1 || row.player_2 || row.player_3
+            const valueField = mapWinsResult.valueField
+            return hasRoster
+              ? buildRowFromRoster(
+                  [row.player_1, row.player_2, row.player_3],
+                  row.team_name,
+                  row[valueField]
+                )
+              : buildRowFromTeamName(row.team_name, row[valueField])
+          }),
           sortDescending
         )
 
         const nextTourneyWins = mergeRowsById(
-          (tourneyWinsRows || []).map((row) =>
-            buildRowFromTeamName(row.team_name, row.team_tourney_wins)
-          ),
+          tourneyWinsRows.map((row) => {
+            const hasRoster = row.player_1 || row.player_2 || row.player_3
+            return hasRoster
+              ? buildRowFromRoster(
+                  [row.player_1, row.player_2, row.player_3],
+                  row.team_name,
+                  row[tourneyWinsResult.valueField]
+                )
+              : buildRowFromTeamName(row.team_name, row[tourneyWinsResult.valueField])
+          }),
           sortDescending
         )
         const totalTeamTourneyWins = nextTourneyWins.reduce(
@@ -204,9 +236,17 @@ function TeamStatsTab() {
         )
 
         const nextAvgPlacement = averageRowsById(
-          (avgPlacementRows || []).map((row) =>
-            buildRowFromTeamName(row.team_name, row.team_avg_placement)
-          )
+          avgPlacementRows.map((row) => {
+            const hasRoster = row.player_1 || row.player_2 || row.player_3
+            const valueField = avgPlacementResult.valueField
+            return hasRoster
+              ? buildRowFromRoster(
+                  [row.player_1, row.player_2, row.player_3],
+                  row.team_name,
+                  row[valueField]
+                )
+              : buildRowFromTeamName(row.team_name, row[valueField])
+          })
         )
 
         if (!cancelled) {

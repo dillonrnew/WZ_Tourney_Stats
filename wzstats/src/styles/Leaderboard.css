@@ -100,11 +100,13 @@
 .team-name {
   font-weight: 700;
   font-size: 16px;
+  text-transform: uppercase;
 }
 
 .team-players {
   font-size: 14px;
   color: #bdc3c7;
+  text-transform: uppercase;
 }
 
 /* Score */
@@ -173,6 +175,7 @@
   font-weight: 700;
   color: #e8edf1;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .team-player-kills {

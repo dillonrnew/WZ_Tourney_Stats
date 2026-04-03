@@ -18,12 +18,10 @@ const FINALS_STARTING_POINTS_BY_ROSTER = {
   'BRAXTVN | CLXP | RYDA': 1,
 }
 
-function PCLSeason1Finals() {
+function PCLSeason1Finals({ finalsName = 'PCL S1 Finals' }) {
   const { id } = useParams()
   const [activeTab, setActiveTab] = useState('leaderboard')
   const [showPage, setShowPage] = useState(false)
-
-  const finalsName = `Pullze Check Ladder Finals`
 
   useEffect(() => {
     const timer = setTimeout(() => {

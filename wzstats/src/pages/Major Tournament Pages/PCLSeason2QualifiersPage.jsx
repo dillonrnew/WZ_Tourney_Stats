@@ -3,11 +3,11 @@ import { useParams } from "react-router-dom";
 import { fetchRows, getSupabaseRequestCount } from "../../lib/supabaseRest";
 import "../../styles/Major Tournament Pages/PCLSeason1QualifiersPage.css";
 
-const CANVAS_WIDTH = 3040;
+const CANVAS_WIDTH = 3600;
 const CANVAS_HEIGHT = 1280;
-const GROUP_STAGES_X = 1680;
-const FINALS_X = 3000;
-const BRACKET_AREA_WIDTH = 1600;
+const GROUP_STAGES_X = 1440;
+const FINALS_X = 2760;
+const BRACKET_AREA_WIDTH = 1360;
 const BRACKET_OFFSET_Y = 160;
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 65;
@@ -20,32 +20,21 @@ const HEADSHOT_BASE_URL =
 const DEFAULT_PLAYER_IMAGE = `${HEADSHOT_BASE_URL}/DEFAULT.png`;
 
 const QUALIFIER_NODE_TOURNEY_LOOKUPS = [
-  { nodeId: "s1", round: 1, lobby: 1 },
-  { nodeId: "s2", round: 1, lobby: 2 },
-  { nodeId: "s3", round: 1, lobby: 3 },
-  { nodeId: "s4", round: 1, lobby: 4 },
-  { nodeId: "s5", round: 1, lobby: 5 },
-  { nodeId: "s6", round: 1, lobby: 6 },
-  { nodeId: "s7", round: 1, lobby: 7 },
-  { nodeId: "s8", round: 1, lobby: 8 },
-  { nodeId: "s9", round: 1, lobby: 9 },
-  { nodeId: "s10", round: 1, lobby: 10 },
-  { nodeId: "s11", round: 1, lobby: 11 },
-  { nodeId: "q1", round: 2, lobby: 1 },
-  { nodeId: "q2", round: 2, lobby: 2 },
-  { nodeId: "q3", round: 2, lobby: 3 },
-  { nodeId: "q4", round: 2, lobby: 4 },
-  { nodeId: "q5", round: 2, lobby: 5 },
-  { nodeId: "q6", round: 2, lobby: 6 },
-  { nodeId: "q7", round: 2, lobby: 7 },
-  { nodeId: "q8", round: 2, lobby: 8 },
-  { nodeId: "r2a", round: 3, lobby: 1 },
-  { nodeId: "r2b", round: 3, lobby: 2 },
-  { nodeId: "r2c", round: 3, lobby: 3 },
-  { nodeId: "r2d", round: 3, lobby: 4 },
-  { nodeId: "fa", round: 4, lobby: 1 },
-  { nodeId: "fb", round: 4, lobby: 2 },
-  { nodeId: "losers", round: 4, lobby: 3 },
+  { nodeId: "q1", round: 1, lobby: 1 },
+  { nodeId: "q2", round: 1, lobby: 2 },
+  { nodeId: "q3", round: 1, lobby: 3 },
+  { nodeId: "q4", round: 1, lobby: 4 },
+  { nodeId: "q5", round: 1, lobby: 5 },
+  { nodeId: "q6", round: 1, lobby: 6 },
+  { nodeId: "q7", round: 1, lobby: 7 },
+  { nodeId: "q8", round: 1, lobby: 8 },
+  { nodeId: "r2a", round: 2, lobby: 1 },
+  { nodeId: "r2b", round: 2, lobby: 2 },
+  { nodeId: "r2c", round: 2, lobby: 3 },
+  { nodeId: "r2d", round: 2, lobby: 4 },
+  { nodeId: "fa", round: 3, lobby: 1 },
+  { nodeId: "fb", round: 3, lobby: 2 },
+  { nodeId: "losers", round: 3, lobby: 3 },
 ];
 const ROUND_BY_NODE_ID = QUALIFIER_NODE_TOURNEY_LOOKUPS.reduce((acc, item) => {
   acc[item.nodeId] = item.round;
@@ -64,11 +53,10 @@ const node = (id, x, y, label, sublabel = "", visible = true, winner = "TBD", lo
 });
 
 const COLUMN_HEADERS = [
-  { key: "seed", label: "Seeding Matches", left: 130, width: 260 },
-  { key: "qual", label: "Qualifier Lobbies", left: 390, width: 260 },
-  { key: "r2", label: "Round 2 Lobbies", left: 650, width: 260 },
-  { key: "final", label: "Final + Losers Lobbies", left: 910, width: 260 },
-  { key: "entry", label: "Group Stage Entry", left: 1290, width: 320 },
+  { key: "qual", label: "Round 1 Lobbies", left: 130, width: 260 },
+  { key: "r2", label: "Round 2 Lobbies", left: 390, width: 260 },
+  { key: "final", label: "Final + Losers Lobbies", left: 650, width: 260 },
+  { key: "entry", label: "Group Stage Entry", left: 1030, width: 320 },
 ];
 
 const GROUP_COLUMN_HEADERS = [
@@ -88,42 +76,25 @@ const GROUP_STAGE_NODES = [
 ];
 
 const BRACKET_NODES = [
-  node("s1", 20, 70, "Seeding Match 1"),
-  node("s2", 20, 160, "Seeding Match 2"),
-  node("s3", 20, 250, "Seeding Match 3"),
-  node("s4", 20, 340, "Seeding Match 4"),
-  node("s5", 20, 430, "Seeding Match 5"),
-  node("s6", 20, 520, "Seeding Match 6"),
-  node("s7", 20, 610, "Seeding Match 7"),
-  node("s8", 20, 700, "Seeding Match 8"),
-  node("s9", 20, 790, "Seeding Match 9"),
-  node("s10", 20, 880, "Seeding Match 10"),
-  node("s11", 20, 970, "Seeding Match 11"),
-  node("seedHub", 260, 553, "", "", false),
-  node("q1", 280, 70, "Qualifier Lobby 1"),
-  node("q8", 280, 175, "Qualifier Lobby 8"),
-  node("q4", 280, 280, "Qualifier Lobby 4"),
-  node("q5", 280, 385, "Qualifier Lobby 5"),
-  node("q2", 280, 490, "Qualifier Lobby 2"),
-  node("q7", 280, 595, "Qualifier Lobby 7"),
-  node("q3", 280, 700, "Qualifier Lobby 3"),
-  node("q6", 280, 805, "Qualifier Lobby 6"),
-  node("r2a", 540, 122, "Round 2 Lobby 1"),
-  node("r2b", 540, 332, "Round 2 Lobby 2"),
-  node("r2c", 540, 542, "Round 2 Lobby 3"),
-  node("r2d", 540, 752, "Round 2 Lobby 4"),
-  node("fa", 800, 227, "Final Lobby 1", "Top 8 -> Groups"),
-  node("fb", 800, 647, "Final Lobby 2", "Top 8 -> Groups"),
-  node("losers", 800, 437, "Losers Finals", "Bottom of 1 + Top of 2"),
-  node("groups", 1180, 437, "Group Stages (24 Teams)", "8 from 1 + 8 from 2 + 8 from Losers"),
+  node("q1", 20, 70, "Round 1 Lobby 1"),
+  node("q8", 20, 175, "Round 1 Lobby 8"),
+  node("q4", 20, 280, "Round 1 Lobby 4"),
+  node("q5", 20, 385, "Round 1 Lobby 5"),
+  node("q2", 20, 490, "Round 1 Lobby 2"),
+  node("q7", 20, 595, "Round 1 Lobby 7"),
+  node("q3", 20, 700, "Round 1 Lobby 3"),
+  node("q6", 20, 805, "Round 1 Lobby 6"),
+  node("r2a", 280, 122, "Round 2 Lobby 1"),
+  node("r2b", 280, 332, "Round 2 Lobby 2"),
+  node("r2c", 280, 542, "Round 2 Lobby 3"),
+  node("r2d", 280, 752, "Round 2 Lobby 4"),
+  node("fa", 540, 227, "Final Lobby 1", "Top 8 -> Groups"),
+  node("fb", 540, 647, "Final Lobby 2", "Top 8 -> Groups"),
+  node("losers", 540, 437, "Losers Finals", "Bottom of 1 + Top of 2"),
+  node("groups", 920, 437, "Group Stages (24 Teams)", "8 from 1 + 8 from 2 + 8 from Losers"),
 ];
 
 const BRACKET_CONNECTIONS = [
-  { from: "s1", to: "seedHub" }, { from: "s2", to: "seedHub" }, { from: "s3", to: "seedHub" }, { from: "s4", to: "seedHub" },
-  { from: "s5", to: "seedHub" }, { from: "s6", to: "seedHub" }, { from: "s7", to: "seedHub" }, { from: "s8", to: "seedHub" },
-  { from: "s9", to: "seedHub" }, { from: "s10", to: "seedHub" }, { from: "s11", to: "seedHub" },
-  { from: "seedHub", to: "q1" }, { from: "seedHub", to: "q2" }, { from: "seedHub", to: "q3" }, { from: "seedHub", to: "q4" },
-  { from: "seedHub", to: "q5" }, { from: "seedHub", to: "q6" }, { from: "seedHub", to: "q7" }, { from: "seedHub", to: "q8" },
   { from: "q1", to: "r2a" }, { from: "q8", to: "r2a" },
   { from: "q4", to: "r2b" }, { from: "q5", to: "r2b" },
   { from: "q2", to: "r2c" }, { from: "q7", to: "r2c" },
@@ -137,14 +108,14 @@ const BRACKET_CONNECTIONS = [
   { from: "losers", to: "groups" },
 ];
 
-const buildQualifierTourneyName = (round, lobby) => `PCL S1 ROUND ${round} LOBBY ${lobby}`;
+const buildQualifierTourneyName = (round, lobby) => `PCL S2 ROUND ${round} LOBBY ${lobby}`;
 const GROUP_STAGE_TOURNEY_LOOKUPS = [
-  { nodeId: "w1ab", tournamentName: "PCL S1 WEEK 1 A VS B" },
-  { nodeId: "w1bc", tournamentName: "PCL S1 WEEK 1 B VS C" },
-  { nodeId: "w1ac", tournamentName: "PCL S1 WEEK 1 A VS C" },
-  { nodeId: "w2ab", tournamentName: "PCL S1 WEEK 2 A VS B" },
-  { nodeId: "w2bc", tournamentName: "PCL S1 WEEK 2 B VS C" },
-  { nodeId: "w2ac", tournamentName: "PCL S1 WEEK 2 A VS C" },
+  { nodeId: "w1ab", tournamentName: "PCL S2 WEEK 1 A VS B" },
+  { nodeId: "w1bc", tournamentName: "PCL S2 WEEK 1 B VS C" },
+  { nodeId: "w1ac", tournamentName: "PCL S2 WEEK 1 A VS C" },
+  { nodeId: "w2ab", tournamentName: "PCL S2 WEEK 2 A VS B" },
+  { nodeId: "w2bc", tournamentName: "PCL S2 WEEK 2 B VS C" },
+  { nodeId: "w2ac", tournamentName: "PCL S2 WEEK 2 A VS C" },
 ];
 
 const getTeamImage = (teamName) =>
@@ -394,9 +365,9 @@ function buildPath(from, to, fromAnchor = "right", toAnchor = "left", curveToGro
   return `M ${start.x} ${start.y} L ${midX} ${start.y} L ${midX} ${end.y} L ${end.x} ${end.y}`;
 }
 
-function PCLSeason1QualifiersPage({
+function PCLSeason2QualifiersPage({
   initialSection = "qualifiers",
-  tournamentName = "PCL S1",
+  tournamentName = "PCL S2",
 }) {
   const { id } = useParams();
   const viewportRef = useRef(null);
@@ -928,18 +899,18 @@ function PCLSeason1QualifiersPage({
           onMouseUp={endDrag}
           onMouseLeave={endDrag}
         >
-          <div className="qp-canvas">
-          <section className="qp-section qp-qualifiers-section">
+          <div className="qp-canvas" style={{ width: CANVAS_WIDTH }}>
+          <section className="qp-section qp-qualifiers-section" style={{ width: BRACKET_AREA_WIDTH }}>
             <h2 className="qp-section-title">Qualifiers Bracket</h2>
             <p className="qp-section-subtitle">
               <span className="qp-section-subtitle-text">
-                Seeding Matches merge together, then feed out into Round 1 lobbies.{" "}
+                Round 1 lobbies start the bracket immediately.{" "}
                 Bottom 8 from Final Lobby 1 and Final Lobby 2 move to Losers Finals.
                 Top 8 from 1, Top 8 from 2, and Top 8 from Losers qualify for Group Stages.
               </span>
             </p>
 
-            <div className="qp-column-labels">
+            <div className="qp-column-labels" style={{ width: BRACKET_AREA_WIDTH }}>
               {COLUMN_HEADERS.map((item) => (
                 <span
                   key={item.key}
@@ -951,7 +922,12 @@ function PCLSeason1QualifiersPage({
               ))}
             </div>
 
-            <svg className="qp-lines" viewBox={`0 0 ${BRACKET_AREA_WIDTH} 1120`} preserveAspectRatio="none">
+            <svg
+              className="qp-lines"
+              style={{ width: BRACKET_AREA_WIDTH }}
+              viewBox={`0 0 ${BRACKET_AREA_WIDTH} 1120`}
+              preserveAspectRatio="none"
+            >
               <defs>
                 <marker
                   id="qp-arrow"
@@ -1309,4 +1285,4 @@ function PCLSeason1QualifiersPage({
   );
 }
 
-export default PCLSeason1QualifiersPage;
+export default PCLSeason2QualifiersPage;

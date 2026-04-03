@@ -15,7 +15,9 @@ const EMPTY_STARTING_POINTS = Object.freeze({})
 const getTeamImage = (teamName) =>
   teamName ? `${BASE_IMAGE_URL}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE
 const getPlayerImage = (playerName) =>
-  playerName ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(playerName)}.png` : DEFAULT_PLAYER_IMAGE
+  playerName
+    ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
+    : DEFAULT_PLAYER_IMAGE
 
 const formatScore = (score) => {
   if (Number.isInteger(score)) return score

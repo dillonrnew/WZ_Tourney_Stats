@@ -10,7 +10,9 @@ const TEAM_IMAGE_BASE =
 const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 const DEFAULT_TEAM_IMAGE = `${TEAM_IMAGE_BASE}/NONE.png`
 const getPlayerImage = (playerName) =>
-  playerName ? `${BASE_IMAGE_URL}/${encodeURIComponent(playerName)}.png` : DEFAULT_IMAGE
+  playerName
+    ? `${BASE_IMAGE_URL}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
+    : DEFAULT_IMAGE
 const getTeamImage = (teamName) =>
   teamName ? `${TEAM_IMAGE_BASE}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE
 

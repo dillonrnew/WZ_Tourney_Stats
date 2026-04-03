@@ -38,6 +38,7 @@
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
+  text-transform: uppercase;
   transition: all 0.3s ease;
 }
 
@@ -60,6 +61,7 @@
   text-align: center;
   margin-bottom: 30px;
   color: #ecf0f1;
+  text-transform: uppercase;
 }
 
 .no-team-selected {
@@ -123,6 +125,7 @@
   right: 0;
   background: rgba(0, 0, 0, 0.8);
   font-size: 16px;
+  text-transform: uppercase;
 }
 
 @media (max-width: 768px) {

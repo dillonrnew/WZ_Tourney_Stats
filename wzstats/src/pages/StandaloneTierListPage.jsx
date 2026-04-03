@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
 import { fetchRows } from '../lib/supabaseRest'
+import {
+  fetchAvgPlacementView,
+  fetchMapWinsView,
+  fetchTeamKillsView,
+  fetchTourneyWinsView,
+} from '../lib/teamStatViews'
 import '../styles/StandaloneTierListPage.css'
 
 const PLAYER_IMAGE_BASE =
@@ -74,7 +80,9 @@ const buildRosterKey = (players) =>
     .join('|')
 
 const getPlayerImage = (playerName) =>
-  playerName ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(playerName)}.png` : DEFAULT_PLAYER_IMAGE
+  playerName
+    ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
+    : DEFAULT_PLAYER_IMAGE
 
 const getTeamImage = (teamName) =>
   teamName ? `${TEAM_IMAGE_BASE}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE
@@ -130,24 +138,23 @@ function StandaloneTierListPage() {
       setStatsError('')
 
       try {
-        const [organizationRows, teamKillsRows, mapWinsRows, tourneyWinsRows, avgPlacementRows, individualKillRows] =
+        const [
+          organizationRows,
+          teamKillsResult,
+          mapWinsResult,
+          tourneyWinsResult,
+          avgPlacementResult,
+          individualKillRows,
+        ] =
           await Promise.all([
             fetchRows('organizations', {
               select: 'id,org_name,player_1,player_2,player_3',
               order: { column: 'org_name', ascending: true },
             }),
-            fetchRows('team_total_kills', {
-              select: 'player_1,player_2,player_3,total_kills',
-            }),
-            fetchRows('team_map_wins', {
-              select: 'team_name,team_map_wins',
-            }),
-            fetchRows('team_tourney_wins', {
-              select: 'team_name,team_tourney_wins',
-            }),
-            fetchRows('team_avg_placement', {
-              select: 'team_name,team_avg_placement',
-            }),
+            fetchTeamKillsView(),
+            fetchMapWinsView(),
+            fetchTourneyWinsView(),
+            fetchAvgPlacementView(),
             fetchRows('individual_total_kills', {
               select: 'player_name,total_kills',
             }),
@@ -156,6 +163,11 @@ function StandaloneTierListPage() {
         if (cancelled) {
           return
         }
+
+        const teamKillsRows = teamKillsResult?.rows || []
+        const mapWinsRows = mapWinsResult?.rows || []
+        const tourneyWinsRows = tourneyWinsResult?.rows || []
+        const avgPlacementRows = avgPlacementResult?.rows || []
 
         const nextOrgMap = {}
         const orgByNameKey = new Map()
@@ -202,11 +214,11 @@ function StandaloneTierListPage() {
           return nextTeamStatsByRosterKey[rosterKey]
         }
 
-        ;(teamKillsRows || []).forEach((row) => {
+        teamKillsRows.forEach((row) => {
           const rosterKey = buildRosterKey([row.player_1, row.player_2, row.player_3].filter(Boolean))
           const stats = ensureTeamStats(rosterKey)
           if (stats) {
-            stats.teamKills += Number(row.total_kills || 0)
+            stats.teamKills += Number(row[teamKillsResult.valueField] || 0)
           }
         })
 
@@ -221,9 +233,34 @@ function StandaloneTierListPage() {
           })
         }
 
-        applyNamedTeamValue(mapWinsRows, 'team_map_wins', 'mapWins')
-        applyNamedTeamValue(tourneyWinsRows, 'team_tourney_wins', 'tourneyWins')
-        applyNamedTeamValue(avgPlacementRows, 'team_avg_placement', 'avgPlacement')
+        const applyRosterTeamValue = (rows, valueKey, outputKey) => {
+          ;(rows || []).forEach((row) => {
+            const rosterKey = buildRosterKey([row.player_1, row.player_2, row.player_3].filter(Boolean))
+            const stats = ensureTeamStats(rosterKey)
+            if (stats) {
+              stats[outputKey] = Number(row[valueKey] || 0)
+            }
+          })
+        }
+
+        const mapWinsValueField = mapWinsResult.valueField
+        const avgPlacementValueField = avgPlacementResult.valueField
+
+        if (mapWinsRows.some((row) => row.player_1 || row.player_2 || row.player_3)) {
+          applyRosterTeamValue(mapWinsRows, mapWinsValueField, 'mapWins')
+        } else {
+          applyNamedTeamValue(mapWinsRows, mapWinsValueField, 'mapWins')
+        }
+        if (tourneyWinsRows.some((row) => row.player_1 || row.player_2 || row.player_3)) {
+          applyRosterTeamValue(tourneyWinsRows, tourneyWinsResult.valueField, 'tourneyWins')
+        } else {
+          applyNamedTeamValue(tourneyWinsRows, tourneyWinsResult.valueField, 'tourneyWins')
+        }
+        if (avgPlacementRows.some((row) => row.player_1 || row.player_2 || row.player_3)) {
+          applyRosterTeamValue(avgPlacementRows, avgPlacementValueField, 'avgPlacement')
+        } else {
+          applyNamedTeamValue(avgPlacementRows, avgPlacementValueField, 'avgPlacement')
+        }
 
         const nextPlayerKillsByName = {}
         ;(individualKillRows || []).forEach((row) => {

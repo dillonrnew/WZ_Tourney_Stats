@@ -9,6 +9,9 @@ import IndividualTournament from './pages/IndividualTournament'
 import PCLSeason1Finals from './pages/Major Tournament Pages/PCLSeason1Finals'
 import PCLSeason1GroupStages from './pages/Major Tournament Pages/PCLSeason1GroupStages'
 import PCLSeason1QualifiersPage from './pages/Major Tournament Pages/PCLSeason1QualifiersPage'
+import PCLSeason2Finals from './pages/Major Tournament Pages/PCLSeason2Finals'
+import PCLSeason2GroupStages from './pages/Major Tournament Pages/PCLSeason2GroupStages'
+import PCLSeason2QualifiersPage from './pages/Major Tournament Pages/PCLSeason2QualifiersPage'
 import AdminTournaments from './pages/AdminTournaments'
 import StandaloneTierListPage from './pages/StandaloneTierListPage'
 import './App.css'
@@ -86,6 +89,9 @@ function AppShell() {
           <Route path="/tournament/:id/qualifiers" element={<PCLSeason1QualifiersPage />} />
           <Route path="/tournament/:id/finals" element={<PCLSeason1Finals />} />
           <Route path="/tournament/:id/GroupStages" element={<PCLSeason1GroupStages />} />
+          <Route path="/pcl-season-2/:id/qualifiers" element={<PCLSeason2QualifiersPage />} />
+          <Route path="/pcl-season-2/:id/finals" element={<PCLSeason2Finals />} />
+          <Route path="/pcl-season-2/:id/GroupStages" element={<PCLSeason2GroupStages />} />
         </Routes>
       </main>
     </div>

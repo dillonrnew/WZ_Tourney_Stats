@@ -12,7 +12,9 @@ const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
 const DEFAULT_TEAM_LOGO =
   "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
 const getPlayerImage = (playerName) =>
-  playerName ? `${BASE_IMAGE_URL}/${encodeURIComponent(playerName)}.png` : DEFAULT_IMAGE
+  playerName
+    ? `${BASE_IMAGE_URL}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
+    : DEFAULT_IMAGE
 const getOrgLogo = (orgName) =>
   orgName
     ? `https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/${encodeURIComponent(orgName)}.png`
@@ -247,8 +249,12 @@ function PlayerStatsTab() {
       try {
         const [totalKills, mapWins, tournamentWins, organizations] = await Promise.all([
           fetchRows("individual_total_kills", { select: "player_name,total_kills" }),
-          fetchRows("individual_map_wins", { select: "player_name,total_wins" }),
-          fetchRows("individual_tournament_wins", { select: "player_name,total_wins" }),
+          fetchRows("individual_map_wins", {
+            select: "player_name,total_wins:individual_map_wins",
+          }),
+          fetchRows("individual_tournament_wins", {
+            select: "player_name,total_wins:individual_tournament_wins",
+          }),
           fetchRows("organizations", { select: "org_name,player_1,player_2,player_3" }),
         ])
 
@@ -518,4 +524,3 @@ function PlayerStatsTab() {
 }
 
 export default PlayerStatsTab
-

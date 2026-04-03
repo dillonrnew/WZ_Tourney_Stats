@@ -91,6 +91,7 @@
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.4px;
+  text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -214,6 +215,7 @@
   font-weight: 650;
   letter-spacing: 0.4px;
   text-align: left;
+  text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
