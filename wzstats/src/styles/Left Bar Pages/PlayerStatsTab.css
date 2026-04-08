@@ -1,12 +1,3 @@
-.PlayerStatsTab {
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-    url("/background.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
 /* =========================
    PLAYER STATS Tab ROOT
    ========================= */
@@ -21,13 +12,12 @@
   box-sizing: border-box;
   color: #fff;
   font-family: "Inter", sans-serif;
-    background-image:
+  background-image:
     linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
     url("/background.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 
 /* =========================

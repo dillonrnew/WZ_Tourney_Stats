@@ -1,6 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchRows, getSupabaseRequestCount } from "../../lib/supabaseRest";
+import {
+  DEFAULT_PLAYER_IMAGE,
+  DEFAULT_TEAM_IMAGE,
+  getPlayerImage,
+  getTeamImage,
+} from "../../lib/imageHelpers";
+import { normalizeText, toNumberOrNull } from "../../lib/normalizers";
 import "../../styles/Major Tournament Pages/PCLSeason1QualifiersPage.css";
 
 const CANVAS_WIDTH = 3040;
@@ -12,12 +19,6 @@ const BRACKET_OFFSET_Y = 160;
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 65;
 const DEFAULT_TEAM_LOGO = "/vite.svg";
-const ORG_LOGO_BASE_URL =
-  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos";
-const DEFAULT_TEAM_IMAGE = `${ORG_LOGO_BASE_URL}/NONE.png`;
-const HEADSHOT_BASE_URL =
-  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots";
-const DEFAULT_PLAYER_IMAGE = `${HEADSHOT_BASE_URL}/DEFAULT.png`;
 
 const QUALIFIER_NODE_TOURNEY_LOOKUPS = [
   { nodeId: "s1", round: 1, lobby: 1 },
@@ -147,13 +148,6 @@ const GROUP_STAGE_TOURNEY_LOOKUPS = [
   { nodeId: "w2ac", tournamentName: "PCL S1 WEEK 2 A VS C" },
 ];
 
-const getTeamImage = (teamName) =>
-  teamName ? `${ORG_LOGO_BASE_URL}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE;
-
-const normalizeText = (value) =>
-  String(value || "")
-    .trim()
-    .toLowerCase();
 
 const isMatchPointFormat = (value) => {
   const normalized = normalizeText(value);
@@ -169,11 +163,6 @@ const getFormatFromTournamentRow = (row = {}) =>
   row.points_format ||
   row.win_format ||
   "";
-
-const toNumberOrNull = (value) => {
-  const next = Number(value);
-  return Number.isFinite(next) ? next : null;
-};
 
 const idsMatch = (a, b) => String(a) === String(b);
 

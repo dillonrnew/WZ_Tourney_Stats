@@ -6,14 +6,13 @@ import {
   fetchTeamKillsView,
   fetchTourneyWinsView,
 } from '../lib/teamStatViews'
+import {
+  DEFAULT_PLAYER_IMAGE,
+  DEFAULT_TEAM_IMAGE,
+  getPlayerImage,
+  getTeamImage,
+} from '../lib/imageHelpers'
 import '../styles/StandaloneTierListPage.css'
-
-const PLAYER_IMAGE_BASE =
-  'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots'
-const TEAM_IMAGE_BASE =
-  'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos'
-const DEFAULT_PLAYER_IMAGE = `${PLAYER_IMAGE_BASE}/DEFAULT.png`
-const DEFAULT_TEAM_IMAGE = `${TEAM_IMAGE_BASE}/NONE.png`
 
 const INITIAL_ROWS = [
   { id: 'tier-s', label: 'S', color: '#ff7f7f' },
@@ -78,14 +77,6 @@ const buildRosterKey = (players) =>
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b))
     .join('|')
-
-const getPlayerImage = (playerName) =>
-  playerName
-    ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
-    : DEFAULT_PLAYER_IMAGE
-
-const getTeamImage = (teamName) =>
-  teamName ? `${TEAM_IMAGE_BASE}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE
 
 const getFallbackTeamName = (players) => `Team ${players?.[0] || 'Unknown'}`
 

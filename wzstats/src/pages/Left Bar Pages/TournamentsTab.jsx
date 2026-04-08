@@ -48,7 +48,8 @@ function Home() {
     {
       id: "db57b67e-95ca-4c39-ae16-b7da5460d1b7",
       name: "Pullze Check Ladder Season 2",
-      image: "https://pbs.twimg.com/profile_banners/1621275827051560960/1757431756/1500x500",
+      image: "/PCL_HEADER.png",
+      imageFit: "fill",
     },
   ];
 

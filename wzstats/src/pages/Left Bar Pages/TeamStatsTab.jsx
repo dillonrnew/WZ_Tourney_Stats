@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import ImageWithFallback from "../../components/ImageWithFallback"
 import { fetchRows } from "../../lib/supabaseRest"
 import {
   fetchAvgPlacementView,
@@ -6,18 +7,15 @@ import {
   fetchTeamKillsView,
   fetchTourneyWinsView,
 } from "../../lib/teamStatViews"
+import {
+  DEFAULT_TEAM_IMAGE as DEFAULT_TEAM_LOGO,
+  getTeamImage as getTeamLogo,
+} from "../../lib/imageHelpers"
+import { normalizeText, toNumber } from "../../lib/normalizers"
+import { useAsync } from "../../lib/useAsync"
 import "../../styles/Left Bar Pages/TeamStatsTab.css"
 
-const DEFAULT_TEAM_LOGO =
-  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
-const ORG_LOGO_BASE =
-  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos"
 const DISPLAY_LIMIT = 15
-
-const normalizeText = (value) =>
-  String(value || "")
-    .trim()
-    .toLowerCase()
 
 const rosterKey = (players) =>
   players
@@ -25,11 +23,6 @@ const rosterKey = (players) =>
     .filter(Boolean)
     .sort()
     .join("|")
-
-const toNumber = (value) => {
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : 0
-}
 
 const sortDescending = (a, b) => b.value - a.value || a.name.localeCompare(b.name)
 
@@ -77,8 +70,161 @@ const averageRowsById = (rows) => {
     .sort(sortAscending)
 }
 
-const getTeamLogo = (teamName) =>
-  teamName ? `${ORG_LOGO_BASE}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_LOGO
+async function loadTeamStats() {
+  const [teamInfoRows, mapWinsResult, tourneyWinsResult, avgPlacementResult, totalKillsResult] =
+    await Promise.all([
+      fetchRows("team_info_view", {
+        select: "updated_team_name,updated_player_1,updated_player_2,updated_player_3",
+      }),
+      fetchMapWinsView(),
+      fetchTourneyWinsView(),
+      fetchAvgPlacementView(),
+      fetchTeamKillsView(),
+    ])
+
+  const mapWinsRows = mapWinsResult?.rows || []
+  const tourneyWinsRows = tourneyWinsResult?.rows || []
+  const avgPlacementRows = avgPlacementResult?.rows || []
+  const totalKillsRows = totalKillsResult?.rows || []
+
+  const teamByName = new Map()
+  const teamByRoster = new Map()
+
+  ;(teamInfoRows || []).forEach((row) => {
+    const teamName = String(row.updated_team_name || "").trim()
+    const players = [row.updated_player_1, row.updated_player_2, row.updated_player_3]
+      .filter(Boolean)
+      .map((player) => String(player).trim())
+    const displayPlayers = players.length ? players : [teamName || "Unknown Team"]
+
+    if (teamName) {
+      const nameKey = normalizeText(teamName)
+      if (!teamByName.has(nameKey)) {
+        teamByName.set(nameKey, {
+          id: `team:${nameKey}`,
+          name: teamName,
+          players: displayPlayers,
+          orgLogo: getTeamLogo(teamName),
+        })
+      }
+    }
+
+    const key = rosterKey(players)
+    if (key && !teamByRoster.has(key)) {
+      teamByRoster.set(key, {
+        id: teamName ? `team:${normalizeText(teamName)}` : `roster:${key}`,
+        name: teamName || displayPlayers.join(" | "),
+        players: displayPlayers,
+        orgLogo: getTeamLogo(teamName),
+      })
+    }
+  })
+
+  const buildRowFromTeamName = (teamName, value) => {
+    const normalizedTeamName = normalizeText(teamName)
+    const info = teamByName.get(normalizedTeamName)
+    const fallbackName = String(teamName || "Unknown Team")
+    const canonicalRosterKey = info ? rosterKey(info.players) : ""
+    const canonicalId = canonicalRosterKey
+      ? `roster:${canonicalRosterKey}`
+      : info?.id || `team:${normalizedTeamName || fallbackName}`
+
+    return {
+      id: canonicalId,
+      name: info?.name || fallbackName,
+      players: info?.players || [fallbackName],
+      orgLogo: info?.orgLogo || getTeamLogo(fallbackName),
+      value: toNumber(value),
+    }
+  }
+
+  const buildRowFromRoster = (players, teamName, value) => {
+    const cleanedPlayers = (players || [])
+      .filter(Boolean)
+      .map((player) => String(player).trim())
+    const key = rosterKey(cleanedPlayers)
+    const info = key ? teamByRoster.get(key) : null
+    const fallbackName = String(teamName || cleanedPlayers.join(" | ") || "Unknown Team")
+    const displayPlayers =
+      info?.players || (cleanedPlayers.length ? cleanedPlayers : [fallbackName])
+
+    return {
+      id: key ? `roster:${key}` : `team:${normalizeText(fallbackName)}`,
+      name: info?.name || fallbackName,
+      players: displayPlayers,
+      orgLogo: info?.orgLogo || getTeamLogo(info?.name || teamName || ""),
+      value: toNumber(value),
+    }
+  }
+
+  const nextKills = mergeRowsById(
+    totalKillsRows.map((row) =>
+      buildRowFromRoster(
+        [row.player_1, row.player_2, row.player_3],
+        row.team_name,
+        row[totalKillsResult.valueField]
+      )
+    ),
+    sortDescending
+  )
+
+  const nextMapWins = mergeRowsById(
+    mapWinsRows.map((row) => {
+      const hasRoster = row.player_1 || row.player_2 || row.player_3
+      const valueField = mapWinsResult.valueField
+      return hasRoster
+        ? buildRowFromRoster(
+            [row.player_1, row.player_2, row.player_3],
+            row.team_name,
+            row[valueField]
+          )
+        : buildRowFromTeamName(row.team_name, row[valueField])
+    }),
+    sortDescending
+  )
+
+  const nextTourneyWins = mergeRowsById(
+    tourneyWinsRows.map((row) => {
+      const hasRoster = row.player_1 || row.player_2 || row.player_3
+      return hasRoster
+        ? buildRowFromRoster(
+            [row.player_1, row.player_2, row.player_3],
+            row.team_name,
+            row[tourneyWinsResult.valueField]
+          )
+        : buildRowFromTeamName(row.team_name, row[tourneyWinsResult.valueField])
+    }),
+    sortDescending
+  )
+
+  console.log(
+    "[TeamStatsTab] Total team tournament wins:",
+    nextTourneyWins.reduce((sum, row) => sum + Number(row.value || 0), 0)
+  )
+
+  const nextAvgPlacement = averageRowsById(
+    avgPlacementRows.map((row) => {
+      const hasRoster = row.player_1 || row.player_2 || row.player_3
+      const valueField = avgPlacementResult.valueField
+      return hasRoster
+        ? buildRowFromRoster(
+            [row.player_1, row.player_2, row.player_3],
+            row.team_name,
+            row[valueField]
+          )
+        : buildRowFromTeamName(row.team_name, row[valueField])
+    })
+  )
+
+  return {
+    kills: nextKills,
+    mapWins: nextMapWins,
+    tourneyWins: nextTourneyWins,
+    avgPlacement: nextAvgPlacement,
+  }
+}
+
+const EMPTY_COLUMNS = { kills: [], mapWins: [], tourneyWins: [], avgPlacement: [] }
 
 function TeamStatsTab() {
   const [search, setSearch] = useState("")
@@ -88,199 +234,9 @@ function TeamStatsTab() {
     tourneyWins: DISPLAY_LIMIT,
     avgPlacement: DISPLAY_LIMIT,
   })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [rankedColumns, setRankedColumns] = useState({
-    kills: [],
-    mapWins: [],
-    tourneyWins: [],
-    avgPlacement: [],
-  })
 
-  useEffect(() => {
-    let cancelled = false
-
-    const loadTeamStats = async () => {
-      setLoading(true)
-      setError("")
-
-      try {
-        const [teamInfoRows, mapWinsResult, tourneyWinsResult, avgPlacementResult, totalKillsResult] =
-          await Promise.all([
-            fetchRows("team_info_view", {
-              select: "updated_team_name,updated_player_1,updated_player_2,updated_player_3",
-            }),
-            fetchMapWinsView(),
-            fetchTourneyWinsView(),
-            fetchAvgPlacementView(),
-            fetchTeamKillsView(),
-          ])
-
-        const mapWinsRows = mapWinsResult?.rows || []
-        const tourneyWinsRows = tourneyWinsResult?.rows || []
-        const avgPlacementRows = avgPlacementResult?.rows || []
-        const totalKillsRows = totalKillsResult?.rows || []
-
-        const teamByName = new Map()
-        const teamByRoster = new Map()
-
-        ;(teamInfoRows || []).forEach((row) => {
-          const teamName = String(row.updated_team_name || "").trim()
-          const players = [row.updated_player_1, row.updated_player_2, row.updated_player_3]
-            .filter(Boolean)
-            .map((player) => String(player).trim())
-          const displayPlayers = players.length ? players : [teamName || "Unknown Team"]
-
-          if (teamName) {
-            const nameKey = normalizeText(teamName)
-            if (!teamByName.has(nameKey)) {
-              teamByName.set(nameKey, {
-                id: `team:${nameKey}`,
-                name: teamName,
-                players: displayPlayers,
-                orgLogo: getTeamLogo(teamName),
-              })
-            }
-          }
-
-          const key = rosterKey(players)
-          if (key && !teamByRoster.has(key)) {
-            teamByRoster.set(key, {
-              id: teamName ? `team:${normalizeText(teamName)}` : `roster:${key}`,
-              name: teamName || displayPlayers.join(" | "),
-              players: displayPlayers,
-              orgLogo: getTeamLogo(teamName),
-            })
-          }
-        })
-
-        const buildRowFromTeamName = (teamName, value) => {
-          const normalizedTeamName = normalizeText(teamName)
-          const info = teamByName.get(normalizedTeamName)
-          const fallbackName = String(teamName || "Unknown Team")
-          const canonicalRosterKey = info ? rosterKey(info.players) : ""
-          const canonicalId = canonicalRosterKey
-            ? `roster:${canonicalRosterKey}`
-            : info?.id || `team:${normalizedTeamName || fallbackName}`
-
-          return {
-            id: canonicalId,
-            name: info?.name || fallbackName,
-            players: info?.players || [fallbackName],
-            orgLogo: info?.orgLogo || getTeamLogo(fallbackName),
-            value: toNumber(value),
-          }
-        }
-
-        const buildRowFromRoster = (players, teamName, value) => {
-          const cleanedPlayers = (players || [])
-            .filter(Boolean)
-            .map((player) => String(player).trim())
-          const key = rosterKey(cleanedPlayers)
-          const info = key ? teamByRoster.get(key) : null
-          const fallbackName = String(teamName || cleanedPlayers.join(" | ") || "Unknown Team")
-          const displayPlayers =
-            info?.players || (cleanedPlayers.length ? cleanedPlayers : [fallbackName])
-
-          return {
-            id: key ? `roster:${key}` : `team:${normalizeText(fallbackName)}`,
-            name: info?.name || fallbackName,
-            players: displayPlayers,
-            orgLogo: info?.orgLogo || getTeamLogo(info?.name || teamName || ""),
-            value: toNumber(value),
-          }
-        }
-
-        const nextKills = mergeRowsById(
-          totalKillsRows.map((row) =>
-            buildRowFromRoster(
-              [row.player_1, row.player_2, row.player_3],
-              row.team_name,
-              row[totalKillsResult.valueField]
-            )
-          ),
-          sortDescending
-        )
-
-        const nextMapWins = mergeRowsById(
-          mapWinsRows.map((row) => {
-            const hasRoster = row.player_1 || row.player_2 || row.player_3
-            const valueField = mapWinsResult.valueField
-            return hasRoster
-              ? buildRowFromRoster(
-                  [row.player_1, row.player_2, row.player_3],
-                  row.team_name,
-                  row[valueField]
-                )
-              : buildRowFromTeamName(row.team_name, row[valueField])
-          }),
-          sortDescending
-        )
-
-        const nextTourneyWins = mergeRowsById(
-          tourneyWinsRows.map((row) => {
-            const hasRoster = row.player_1 || row.player_2 || row.player_3
-            return hasRoster
-              ? buildRowFromRoster(
-                  [row.player_1, row.player_2, row.player_3],
-                  row.team_name,
-                  row[tourneyWinsResult.valueField]
-                )
-              : buildRowFromTeamName(row.team_name, row[tourneyWinsResult.valueField])
-          }),
-          sortDescending
-        )
-        const totalTeamTourneyWins = nextTourneyWins.reduce(
-          (sum, row) => sum + Number(row.value || 0),
-          0
-        )
-
-        const nextAvgPlacement = averageRowsById(
-          avgPlacementRows.map((row) => {
-            const hasRoster = row.player_1 || row.player_2 || row.player_3
-            const valueField = avgPlacementResult.valueField
-            return hasRoster
-              ? buildRowFromRoster(
-                  [row.player_1, row.player_2, row.player_3],
-                  row.team_name,
-                  row[valueField]
-                )
-              : buildRowFromTeamName(row.team_name, row[valueField])
-          })
-        )
-
-        if (!cancelled) {
-          console.log("[TeamStatsTab] Total team tournament wins:", totalTeamTourneyWins)
-          setRankedColumns({
-            kills: nextKills,
-            mapWins: nextMapWins,
-            tourneyWins: nextTourneyWins,
-            avgPlacement: nextAvgPlacement,
-          })
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err.message || "Failed to load team stats.")
-          setRankedColumns({
-            kills: [],
-            mapWins: [],
-            tourneyWins: [],
-            avgPlacement: [],
-          })
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadTeamStats()
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { data, loading, error } = useAsync(loadTeamStats, [])
+  const rankedColumns = data ?? EMPTY_COLUMNS
 
   const filteredColumns = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -342,7 +298,7 @@ function TeamStatsTab() {
     }
   }, [filteredColumns, search, visibleCount])
 
-  const renderColumn = (title, rows, visibleRows, statKey) => {
+  const renderColumn = useCallback((title, rows, visibleRows, statKey) => {
     const ranks = rankByStat[statKey]
     const showMore = !search.trim() && visibleRows.length < rows.length
     const showLess = !search.trim() && visibleCount[statKey] > DISPLAY_LIMIT
@@ -364,14 +320,12 @@ function TeamStatsTab() {
               >
                 <div className="TeamStatsTab__rank">{rank}</div>
 
-                <img
+                <ImageWithFallback
                   className="TeamStatsTab__orgLogo"
                   src={row.orgLogo || DEFAULT_TEAM_LOGO}
-                  alt=""
-                  onError={(e) => {
-                    e.currentTarget.onerror = null
-                    e.currentTarget.src = DEFAULT_TEAM_LOGO
-                  }}
+                  fallback={DEFAULT_TEAM_LOGO}
+                  loading="lazy"
+                  decoding="async"
                 />
 
                 <div className="TeamStatsTab__name">
@@ -424,7 +378,7 @@ function TeamStatsTab() {
         </div>
       </div>
     )
-  }
+  }, [rankByStat, search, visibleCount, setVisibleCount])
 
   if (loading) {
     return (

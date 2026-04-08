@@ -1,24 +1,16 @@
 // src/components/PlayerStatsTab.jsx
 import { memo, useDeferredValue, useEffect, useMemo, useState } from "react"
 import { fetchRows } from "../../lib/supabaseRest"
+import {
+  DEFAULT_PLAYER_IMAGE as DEFAULT_IMAGE,
+  DEFAULT_TEAM_IMAGE as DEFAULT_TEAM_LOGO,
+  getPlayerImage,
+  getTeamImage as getOrgLogo,
+} from "../../lib/imageHelpers"
+import { useAsync } from "../../lib/useAsync"
+import ImageWithFallback from "../../components/ImageWithFallback"
 import "../../styles/Left Bar Pages/PlayerStatsTab.css"
 
-/* =========================
-   HEADSHOT IMAGE HELPERS
-   ========================= */
-const BASE_IMAGE_URL =
-  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots"
-const DEFAULT_IMAGE = `${BASE_IMAGE_URL}/DEFAULT.png`
-const DEFAULT_TEAM_LOGO =
-  "https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/NONE.png"
-const getPlayerImage = (playerName) =>
-  playerName
-    ? `${BASE_IMAGE_URL}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
-    : DEFAULT_IMAGE
-const getOrgLogo = (orgName) =>
-  orgName
-    ? `https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos/${encodeURIComponent(orgName)}.png`
-    : DEFAULT_TEAM_LOGO
 const normalizeName = (name) => String(name || "").trim().toLowerCase()
 const DISPLAY_LIMIT = 25
 const VIRTUAL_ROW_HEIGHT = 88
@@ -32,30 +24,23 @@ const PlayerStatCard = memo(function PlayerStatCard({ row, player, rank }) {
     <div className={`PlayerStatsTab__card PlayerStatsTab__card--player ${rankClass}`}>
       <div className="PlayerStatsTab__rank">{rank}</div>
 
-      <img
+      <ImageWithFallback
         className="PlayerStatsTab__headshot"
         src={getPlayerImage(player?.name)}
-        alt=""
+        fallback={DEFAULT_IMAGE}
         loading="lazy"
         decoding="async"
-        onError={(e) => {
-          e.currentTarget.src = DEFAULT_IMAGE
-        }}
       />
 
       <div className="PlayerStatsTab__name">{player?.name || "Unknown"}</div>
 
       {hasOrg ? (
-        <img
+        <ImageWithFallback
           className="PlayerStatsTab__orgLogo"
           src={player?.orgLogo}
-          alt=""
+          fallback={DEFAULT_TEAM_LOGO}
           loading="lazy"
           decoding="async"
-          onError={(e) => {
-            e.currentTarget.onerror = null
-            e.currentTarget.src = DEFAULT_TEAM_LOGO
-          }}
         />
       ) : (
         <div className="PlayerStatsTab__orgLogoPlaceholder" aria-hidden="true" />
@@ -227,6 +212,80 @@ const StatsColumn = memo(function StatsColumn({
   )
 })
 
+async function loadPlayerStats() {
+  const [totalKills, mapWins, tournamentWins, organizations] = await Promise.all([
+    fetchRows("individual_total_kills", { select: "player_name,total_kills" }),
+    fetchRows("individual_map_wins", {
+      select: "player_name,total_wins:individual_map_wins",
+    }),
+    fetchRows("individual_tournament_wins", {
+      select: "player_name,total_wins:individual_tournament_wins",
+    }),
+    fetchRows("organizations", { select: "org_name,player_1,player_2,player_3" }),
+  ])
+
+  const playersByKey = new Map()
+
+  const ensurePlayer = (playerName) => {
+    const name = String(playerName || "").trim()
+    const key = normalizeName(name)
+    if (!key) return null
+
+    if (!playersByKey.has(key)) {
+      playersByKey.set(key, {
+        playerId: key,
+        name,
+        orgName: "",
+        kills: 0,
+        mapWins: 0,
+        tourneyWins: 0,
+      })
+    }
+
+    return playersByKey.get(key)
+  }
+
+  ;(totalKills || []).forEach((row) => {
+    const player = ensurePlayer(row.player_name)
+    if (!player) return
+    player.kills += Number(row.total_kills || 0)
+  })
+
+  ;(mapWins || []).forEach((row) => {
+    const player = ensurePlayer(row.player_name)
+    if (!player) return
+    player.mapWins += Number(row.total_wins || 0)
+  })
+
+  ;(tournamentWins || []).forEach((row) => {
+    const player = ensurePlayer(row.player_name)
+    if (!player) return
+    player.tourneyWins += Number(row.total_wins || 0)
+  })
+
+  console.log(
+    "[PlayerStatsTab] Total player tournament wins:",
+    (tournamentWins || []).reduce((sum, row) => sum + Number(row.total_wins || 0), 0)
+  )
+
+  ;(organizations || []).forEach((org) => {
+    ;[org.player_1, org.player_2, org.player_3].forEach((playerName) => {
+      const key = normalizeName(playerName)
+      if (!key) return
+      const player = playersByKey.get(key)
+      if (!player) return
+      if (!player.orgName && org.org_name) {
+        player.orgName = org.org_name
+      }
+    })
+  })
+
+  return Array.from(playersByKey.values()).map((player) => ({
+    ...player,
+    orgLogo: player.orgName ? getOrgLogo(player.orgName) : "",
+  }))
+}
+
 function PlayerStatsTab() {
   const [search, setSearch] = useState("")
   const [visibleCount, setVisibleCount] = useState({
@@ -234,112 +293,10 @@ function PlayerStatsTab() {
     mapWins: DISPLAY_LIMIT,
     tourneyWins: DISPLAY_LIMIT,
   })
-  const [playersData, setPlayersData] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
   const deferredSearch = useDeferredValue(search)
 
-  useEffect(() => {
-    let cancelled = false
-
-    const loadPlayerStats = async () => {
-      setLoading(true)
-      setError("")
-
-      try {
-        const [totalKills, mapWins, tournamentWins, organizations] = await Promise.all([
-          fetchRows("individual_total_kills", { select: "player_name,total_kills" }),
-          fetchRows("individual_map_wins", {
-            select: "player_name,total_wins:individual_map_wins",
-          }),
-          fetchRows("individual_tournament_wins", {
-            select: "player_name,total_wins:individual_tournament_wins",
-          }),
-          fetchRows("organizations", { select: "org_name,player_1,player_2,player_3" }),
-        ])
-
-        const playersByKey = new Map()
-
-        const ensurePlayer = (playerName) => {
-          const name = String(playerName || "").trim()
-          const key = normalizeName(name)
-          if (!key) return null
-
-          if (!playersByKey.has(key)) {
-            playersByKey.set(key, {
-              playerId: key,
-              name,
-              orgName: "",
-              kills: 0,
-              mapWins: 0,
-              tourneyWins: 0,
-            })
-          }
-
-          return playersByKey.get(key)
-        }
-
-        ;(totalKills || []).forEach((row) => {
-          const player = ensurePlayer(row.player_name)
-          if (!player) return
-          player.kills += Number(row.total_kills || 0)
-        })
-
-        ;(mapWins || []).forEach((row) => {
-          const player = ensurePlayer(row.player_name)
-          if (!player) return
-          player.mapWins += Number(row.total_wins || 0)
-        })
-
-        ;(tournamentWins || []).forEach((row) => {
-          const player = ensurePlayer(row.player_name)
-          if (!player) return
-          player.tourneyWins += Number(row.total_wins || 0)
-        })
-        const totalPlayerTourneyWins = (tournamentWins || []).reduce(
-          (sum, row) => sum + Number(row.total_wins || 0),
-          0
-        )
-
-        ;(organizations || []).forEach((org) => {
-          ;[org.player_1, org.player_2, org.player_3].forEach((playerName) => {
-            const key = normalizeName(playerName)
-            if (!key) return
-            const player = playersByKey.get(key)
-            if (!player) return
-            if (!player.orgName && org.org_name) {
-              player.orgName = org.org_name
-            }
-          })
-        })
-
-        const nextPlayers = Array.from(playersByKey.values()).map((player) => ({
-          ...player,
-          orgLogo: player.orgName ? getOrgLogo(player.orgName) : "",
-        }))
-
-        if (!cancelled) {
-          console.log("[PlayerStatsTab] Total player tournament wins:", totalPlayerTourneyWins)
-          setPlayersData(nextPlayers)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setPlayersData([])
-          setError(err.message || "Failed to load player stats.")
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadPlayerStats()
-
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const { data, loading, error } = useAsync(loadPlayerStats, [])
+  const playersData = data ?? []
 
   // Map for quick lookup (stable)
   const playerById = useMemo(() => {

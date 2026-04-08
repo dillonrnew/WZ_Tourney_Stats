@@ -6,6 +6,25 @@ let supabaseRequestCount = 0
 
 export const getSupabaseRequestCount = () => supabaseRequestCount
 
+// Simple in-memory cache for read queries. Prevents re-fetching identical
+// requests when the user switches tabs and comes back.
+const CACHE_TTL_MS = 180_000
+const queryCache = new Map()
+
+const getCached = (key) => {
+  const entry = queryCache.get(key)
+  if (!entry) return null
+  if (Date.now() > entry.expiresAt) {
+    queryCache.delete(key)
+    return null
+  }
+  return entry.data
+}
+
+const setCached = (key, data) => {
+  queryCache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS })
+}
+
 const buildHeaders = () => {
   if (!SUPABASE_ANON_KEY) {
     throw new Error('Missing VITE_SUPABASE_ANON_KEY environment variable.')
@@ -64,11 +83,15 @@ export async function fetchRows(
   tableName,
   { select = '*', filters = {}, order = null, limit = null, offset = null, signal } = {},
 ) {
-  supabaseRequestCount += 1
   const params = buildQueryParams({ filters, order, limit, offset })
   params.set('select', select)
+  const url = buildUrl(tableName, params.toString())
 
-  const response = await fetch(buildUrl(tableName, params.toString()), {
+  const cached = getCached(url)
+  if (cached) return cached
+
+  supabaseRequestCount += 1
+  const response = await fetch(url, {
     method: 'GET',
     headers: buildHeaders(),
     signal,
@@ -79,7 +102,9 @@ export async function fetchRows(
     throw new Error(`Supabase query failed (${response.status}): ${message}`)
   }
 
-  return response.json()
+  const data = await response.json()
+  setCached(url, data)
+  return data
 }
 
 export async function insertRow(tableName, row, { signal } = {}) {

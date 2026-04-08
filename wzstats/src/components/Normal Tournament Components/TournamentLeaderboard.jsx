@@ -1,44 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
-import '../../styles/Leaderboard.css'
 import { fetchRows } from '../../lib/supabaseRest'
+import {
+  DEFAULT_PLAYER_IMAGE,
+  DEFAULT_TEAM_IMAGE,
+  getPlayerImage,
+  getTeamImage,
+} from '../../lib/imageHelpers'
+import { normalizeText, normalizeRosterKey, toNumberOrNull } from '../../lib/normalizers'
+import ImageWithFallback from '../ImageWithFallback'
+import '../../styles/Leaderboard.css'
 
-const BASE_IMAGE_URL =
-  'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos'
-const PLAYER_IMAGE_BASE =
-  'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots'
-
-const DEFAULT_TEAM_IMAGE = `${BASE_IMAGE_URL}/NONE.png`
-const DEFAULT_PLAYER_IMAGE = `${PLAYER_IMAGE_BASE}/DEFAULT.png`
 const EMPTY_STARTING_POINTS = Object.freeze({})
-
-// Convert team name to filename-safe format
-const getTeamImage = (teamName) =>
-  teamName ? `${BASE_IMAGE_URL}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE
-const getPlayerImage = (playerName) =>
-  playerName
-    ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
-    : DEFAULT_PLAYER_IMAGE
 
 const formatScore = (score) => {
   if (Number.isInteger(score)) return score
   return Number(score.toFixed(2))
-}
-
-const normalizeText = (value) =>
-  String(value || '')
-    .trim()
-    .toLowerCase()
-
-const normalizeRosterKey = (value) =>
-  String(value || '')
-    .split('|')
-    .map((part) => normalizeText(part))
-    .filter(Boolean)
-    .join('|')
-
-const toNumberOrNull = (value) => {
-  const next = Number(value)
-  return Number.isFinite(next) ? next : null
 }
 
 const isMatchPointFormat = (value) => {
@@ -402,14 +378,12 @@ function Leaderboard({ tournamentId, startingPointsByTeam, startingPointsByRoste
                 </div>
               </div>
 
-              <img
+              <ImageWithFallback
                 src={getTeamImage(team.name)}
-                alt=""
                 className="team-logo"
-                onError={(e) => {
-                  e.currentTarget.onerror = null
-                  e.currentTarget.src = DEFAULT_TEAM_IMAGE
-                }}
+                fallback={DEFAULT_TEAM_IMAGE}
+                loading="lazy"
+                decoding="async"
               />
 
               <div className="team-score">{formatScore(team.score)}</div>
@@ -422,14 +396,12 @@ function Leaderboard({ tournamentId, startingPointsByTeam, startingPointsByRoste
                 <div className="team-player-strip">
                   {team.playerCards.map((player, playerIndex) => (
                     <div key={`${team.id}-player-${playerIndex}`} className="team-player-card">
-                      <img
+                      <ImageWithFallback
                         src={getPlayerImage(player.name)}
-                        alt=""
                         className="team-player-image"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null
-                          e.currentTarget.src = DEFAULT_PLAYER_IMAGE
-                        }}
+                        fallback={DEFAULT_PLAYER_IMAGE}
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="team-player-overlay">
                         <div className="team-player-name">{player.name}</div>

@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 
 function TournamentCard({ tournament, items = [] }) {
+  const imageStyle = tournament.imageFit
+    ? { objectFit: tournament.imageFit }
+    : undefined;
+
   return (
     <div className="t-card">
       <div className="t-card__header">
@@ -8,7 +12,12 @@ function TournamentCard({ tournament, items = [] }) {
           <h3 className="t-card__title">{tournament.name}</h3>
         </div>
         <div className="t-card__imgWrap">
-          <img className="t-card__img" src={tournament.image} alt={tournament.name} />
+          <img
+            className="t-card__img"
+            src={tournament.image}
+            alt={tournament.name}
+            style={imageStyle}
+          />
           <div className="t-card__imgOverlay" aria-hidden="true" />
         </div>
       </div>

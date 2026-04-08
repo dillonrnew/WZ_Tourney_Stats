@@ -1,20 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { fetchRows } from '../../lib/supabaseRest'
+import {
+  DEFAULT_PLAYER_IMAGE,
+  DEFAULT_TEAM_IMAGE,
+  getPlayerImage,
+  getTeamImage,
+} from '../../lib/imageHelpers'
+import ImageWithFallback from '../ImageWithFallback'
 import '../../styles/TournamentStatsTab.css'
-
-const PLAYER_IMAGE_BASE =
-  'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Headshots'
-const TEAM_IMAGE_BASE =
-  'https://mswibjiemxfddkymdpta.supabase.co/storage/v1/object/public/Org%20Logos'
-
-const DEFAULT_PLAYER_IMAGE = `${PLAYER_IMAGE_BASE}/DEFAULT.png`
-const DEFAULT_TEAM_IMAGE = `${TEAM_IMAGE_BASE}/NONE.png`
-const getPlayerImage = (playerName) =>
-  playerName
-    ? `${PLAYER_IMAGE_BASE}/${encodeURIComponent(String(playerName).trim().toUpperCase())}.png`
-    : DEFAULT_PLAYER_IMAGE
-const getTeamImage = (teamName) =>
-  teamName ? `${TEAM_IMAGE_BASE}/${encodeURIComponent(teamName)}.png` : DEFAULT_TEAM_IMAGE
 
 function TournamentStatsTab({ tournamentId }) {
   const [hoveredTeamId, setHoveredTeamId] = useState(null)
@@ -210,14 +203,12 @@ function TournamentStatsTab({ tournamentId }) {
             >
               <div className="TournamentStatsTab__teamRank">{rank}</div>
 
-              <img
+              <ImageWithFallback
                 className="TournamentStatsTab__teamAvatar"
                 src={team?.avatar || DEFAULT_TEAM_IMAGE}
-                alt=""
-                onError={(e) => {
-                  e.currentTarget.onerror = null
-                  e.currentTarget.src = DEFAULT_TEAM_IMAGE
-                }}
+                fallback={DEFAULT_TEAM_IMAGE}
+                loading="lazy"
+                decoding="async"
               />
 
               <div className="TournamentStatsTab__teamName">{team?.name || 'Unknown'}</div>
@@ -263,23 +254,19 @@ function TournamentStatsTab({ tournamentId }) {
                   onMouseLeave={() => setHoveredTeamId(null)}
                 >
                   <div className="TournamentStatsTab__playerRank">{rank}</div>
-                  <img
+                  <ImageWithFallback
                     className="TournamentStatsTab__playerOrgLogo"
                     src={images.badge}
-                    alt=""
-                    onError={(e) => {
-                      e.currentTarget.onerror = null
-                      e.currentTarget.src = DEFAULT_TEAM_IMAGE
-                    }}
+                    fallback={DEFAULT_TEAM_IMAGE}
+                    loading="lazy"
+                    decoding="async"
                   />
-                  <img
+                  <ImageWithFallback
                     className="TournamentStatsTab__playerPic"
                     src={images.avatar}
-                    alt=""
-                    onError={(e) => {
-                      e.currentTarget.onerror = null
-                      e.currentTarget.src = DEFAULT_PLAYER_IMAGE
-                    }}
+                    fallback={DEFAULT_PLAYER_IMAGE}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="TournamentStatsTab__playerName">{player.name}</div>
                   <div className="TournamentStatsTab__playerValue">{player.value}</div>
