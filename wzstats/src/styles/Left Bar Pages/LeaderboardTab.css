@@ -238,3 +238,52 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .Leaderboards {
+    padding: 20px 14px;
+  }
+
+  .Leaderboards__header {
+    margin-bottom: 28px;
+  }
+
+  .Leaderboards__header h1 {
+    font-size: 26px;
+    letter-spacing: 1px;
+  }
+
+  .Leaderboards__header p {
+    font-size: 14px;
+  }
+
+  /* Shorter featured cards on small phones */
+  .FeaturedCard {
+    height: 280px;
+  }
+
+  .FeaturedCard__player {
+    font-size: 20px;
+  }
+
+  .FeaturedCard__value {
+    font-size: 26px;
+  }
+
+  .Leaderboards__sectionTitle {
+    font-size: 18px;
+  }
+
+  .TopListRow {
+    font-size: 14px;
+  }
+
+  .TeamHighlightCard {
+    padding: 16px;
+  }
+
+  .TeamHighlightCard__logo {
+    width: 60px;
+    height: 60px;
+  }
+}

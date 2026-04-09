@@ -73,3 +73,32 @@
   flex-direction: column;
   box-sizing: border-box;
 }
+
+@media (max-width: 768px) {
+  .tournament-topbar {
+    padding: 14px 16px 14px 60px; /* left indent clears hamburger button */
+  }
+
+  .tournament-topbar h1 {
+    font-size: 20px;
+  }
+
+  /* Tabs scroll horizontally instead of overflowing */
+  .tournament-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+  }
+
+  .tournament-tabs button {
+    flex: 0 0 auto;
+    min-width: 90px;
+    padding: 12px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .tournament-content {
+    padding: 16px 12px;
+  }
+}

@@ -331,3 +331,29 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .home {
+    padding: 56px 14px 48px; /* top padding clears hamburger */
+  }
+
+  .tournaments-page-title {
+    font-size: 24px;
+  }
+
+  .tournaments-tab {
+    padding: 12px 14px;
+  }
+
+  .tournaments-tab__title {
+    font-size: 16px;
+  }
+
+  .t-card__title {
+    font-size: 20px;
+  }
+
+  .scrim-card__title {
+    font-size: 14px;
+  }
+}

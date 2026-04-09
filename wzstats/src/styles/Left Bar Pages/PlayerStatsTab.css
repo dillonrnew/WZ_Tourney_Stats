@@ -267,3 +267,51 @@
     max-width: 720px;
   }
 }
+
+@media (max-width: 600px) {
+  .PlayerStatsTab {
+    padding: 16px 10px;
+  }
+
+  /* Space for hamburger */
+  .PlayerStatsTab__header {
+    padding-top: 48px;
+  }
+
+  .PlayerStatsTab__title {
+    font-size: 22px;
+  }
+
+  .PlayerStatsTab__card {
+    height: auto;
+    min-height: 64px;
+    padding: 0 12px;
+  }
+
+  /* Tighten the player card grid columns */
+  .PlayerStatsTab__card--player {
+    grid-template-columns: 32px 56px minmax(0, 1fr) 44px auto;
+  }
+
+  .PlayerStatsTab__rank {
+    font-size: 14px;
+    width: 28px;
+    min-width: 28px;
+  }
+
+  .PlayerStatsTab__orgLogo,
+  .PlayerStatsTab__orgLogoPlaceholder {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+  }
+
+  .PlayerStatsTab__name {
+    font-size: 13px;
+  }
+
+  .PlayerStatsTab__value {
+    font-size: 16px;
+    min-width: 44px;
+  }
+}

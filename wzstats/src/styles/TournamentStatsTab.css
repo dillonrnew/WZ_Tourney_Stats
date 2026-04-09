@@ -282,3 +282,66 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .TournamentStatsTab__playerCard {
+    height: auto;
+    min-height: 52px;
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .TournamentStatsTab__playerPic {
+    width: 44px;
+    min-width: 44px;
+  }
+
+  .TournamentStatsTab__playerOrgLogo {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+  }
+
+  .TournamentStatsTab__playerRank {
+    width: 22px;
+    min-width: 22px;
+    font-size: 13px;
+  }
+
+  .TournamentStatsTab__playerName {
+    font-size: 13px;
+  }
+
+  .TournamentStatsTab__playerValue {
+    font-size: 15px;
+    min-width: 36px;
+  }
+
+  .TournamentStatsTab__teamCard {
+    height: auto;
+    min-height: 56px;
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .TournamentStatsTab__teamRank {
+    width: 24px;
+    min-width: 24px;
+    font-size: 14px;
+  }
+
+  .TournamentStatsTab__teamAvatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+
+  .TournamentStatsTab__teamName {
+    font-size: 13px;
+  }
+
+  .TournamentStatsTab__teamValue {
+    font-size: 16px;
+    min-width: 40px;
+  }
+}

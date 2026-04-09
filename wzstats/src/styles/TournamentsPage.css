@@ -92,6 +92,12 @@
   color: #bdc3c7;
 }
 
+.link-icon--svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .link-title {
   margin: 0;
   font-size: 16px;
@@ -245,47 +251,145 @@
   margin: 0;
 }
 
+/* ============ MOBILE MENU BUTTON & BACKDROP (hidden on desktop) ============ */
+.mobile-menu-btn {
+  display: none;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+/* ============ MOBILE LAYOUT ============ */
 @media (max-width: 768px) {
-  .app-layout {
-    flex-direction: column;
-  }
-
-  .sidebar {
+  /* Hamburger: fixed top-left, always accessible */
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background-color: #1f2327;
-    padding: 20px;
-    overflow-y: auto;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.25);
+    top: 10px;
+    left: 10px;
+    z-index: 100;
+    width: 42px;
+    height: 42px;
+    background: #1f2327;
+    border: 1px solid #3a3f45;
+    border-radius: 8px;
+    color: #ecf0f1;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
   }
 
+  /* Hide hamburger when sidebar is open */
+  .app-layout:not(.sidebar-hidden) .mobile-menu-btn {
+    display: none;
+  }
+
+  /* Backdrop: covers page content when sidebar is open */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 150;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--sidebar-motion-duration) var(--sidebar-motion-ease);
+  }
+
+  .app-layout:not(.sidebar-hidden) .sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Sidebar becomes an overlay drawer */
+  .sidebar {
+    width: 260px !important;
+    transform: translateX(-100%);
+    transition: transform var(--sidebar-motion-duration) var(--sidebar-motion-ease);
+    z-index: 200;
+  }
+
+  /* Sidebar visible when not hidden */
+  .app-layout:not(.sidebar-hidden) .sidebar {
+    transform: translateX(0);
+  }
+
+  /* Sidebar collapsed state on mobile still just hides it */
+  .app-layout.sidebar-hidden .sidebar {
+    transform: translateX(-100%);
+    width: 260px !important;
+  }
+
+  /* Restore full nav layout inside sidebar on mobile */
   .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-direction: column !important;
+    padding: 15px !important;
+    gap: 8px !important;
+  }
+
+  .app-layout.sidebar-hidden .sidebar-nav {
+    padding: 15px !important;
+    gap: 8px !important;
   }
 
   .link-block {
-    padding: 15px;
+    padding: 12px 10px !important;
+    gap: 10px !important;
   }
 
-  .page-content {
-    margin-left: var(--sidebar-width);
-    width: calc(100% - var(--sidebar-width));
-    min-height: 100vh;
-    background-color: #000;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
+  .app-layout.sidebar-hidden .link-block {
+    justify-content: flex-start !important;
+    padding: 12px 10px !important;
+    gap: 10px !important;
   }
 
+  .link-title {
+    opacity: 1 !important;
+    max-width: 170px !important;
+    margin: 0 !important;
+  }
+
+  .app-layout.sidebar-hidden .link-title {
+    opacity: 1 !important;
+    max-width: 170px !important;
+  }
+
+  .link-icon {
+    min-width: 25px !important;
+    width: auto !important;
+    height: auto !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+
+  .app-layout.sidebar-hidden .link-icon {
+    min-width: 25px !important;
+  }
+
+  .app-layout.sidebar-hidden .sidebar-link.active .link-icon {
+    width: auto !important;
+    height: auto !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* Footer always visible when sidebar is open */
+  .sidebar-footer {
+    opacity: 1 !important;
+    max-height: 90px !important;
+    padding: 15px !important;
+    border-color: #2a2f33 !important;
+  }
+
+  /* Page content: always full width — sidebar no longer shifts it */
+  .page-content,
   .app-layout.sidebar-hidden .page-content {
-    margin-left: var(--sidebar-collapsed-width);
-    width: calc(100% - var(--sidebar-collapsed-width));
+    margin-left: 0 !important;
+    width: 100% !important;
   }
 }

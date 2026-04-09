@@ -244,3 +244,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .TeamStatsTab__header {
+    padding-top: 48px; /* clear hamburger button */
+  }
+
+  .TeamStatsTab__title {
+    font-size: clamp(1.1rem, 5vw, 1.5rem);
+  }
+}

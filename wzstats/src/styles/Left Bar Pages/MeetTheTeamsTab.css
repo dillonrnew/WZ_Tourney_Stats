@@ -130,7 +130,12 @@
 
 @media (max-width: 768px) {
   .team-container {
-    padding: 20px 10px;
+    padding: 20px 12px 20px 12px;
+  }
+
+  /* Give room for hamburger button */
+  .team-container h1 {
+    padding-top: 48px;
   }
 
   .teams-grid {
@@ -141,11 +146,38 @@
   .team-button {
     width: 100%;
     max-width: 300px;
+    padding: 12px 20px; /* larger tap target */
   }
 
+  /* Switch overlapping cards to a simple responsive grid */
   .players-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-    padding: 0 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 0;
+    overflow-x: visible;
+    justify-content: center;
+  }
+
+  .player-card {
+    width: 100%;
+    margin: 0;
+    z-index: auto;
+  }
+
+  .player-card:first-child,
+  .player-card:nth-child(2),
+  .player-card:last-child {
+    margin: 0;
+    z-index: auto;
+  }
+
+  .player-card img {
+    height: 160px;
+  }
+
+  .player-card p {
+    font-size: 13px;
+    padding: 4px 6px;
   }
 }

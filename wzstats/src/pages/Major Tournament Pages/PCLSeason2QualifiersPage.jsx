@@ -18,7 +18,7 @@ const BRACKET_AREA_WIDTH = 1360;
 const BRACKET_OFFSET_Y = 160;
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 65;
-const DEFAULT_TEAM_LOGO = "/vite.svg";
+const DEFAULT_TEAM_LOGO = null;
 
 const QUALIFIER_NODE_TOURNEY_LOOKUPS = [
   { nodeId: "q1", round: 1, lobby: 1 },
@@ -993,7 +993,7 @@ function PCLSeason2QualifiersPage({
                           <p className="qp-node-winner">{item.winner}</p>
                         </div>
                         <div className="qp-node-logo-wrap">
-                          <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />
+                          {item.logo && <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />}
                         </div>
                       </div>
                     )}
@@ -1094,7 +1094,7 @@ function PCLSeason2QualifiersPage({
                       <p className="qp-node-winner">{item.winner}</p>
                     </div>
                     <div className="qp-node-logo-wrap">
-                      <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />
+                      {item.logo && <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />}
                     </div>
                   </div>
                   {item.tournamentId && hoveredNodeId === item.id ? (
@@ -1199,7 +1199,7 @@ function PCLSeason2QualifiersPage({
                     <p className="qp-node-winner">{finalsNodeData.winner}</p>
                   </div>
                   <div className="qp-node-logo-wrap">
-                    <img className="qp-node-logo" src={finalsNodeData.logo} alt="" onError={handleNodeLogoError} />
+                    {finalsNodeData.logo && <img className="qp-node-logo" src={finalsNodeData.logo} alt="" onError={handleNodeLogoError} />}
                   </div>
                 </div>
                 {finalsNodeData.tournamentId && hoveredNodeId === "finals-node" ? (

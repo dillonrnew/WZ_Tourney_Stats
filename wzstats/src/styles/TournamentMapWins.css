@@ -163,3 +163,67 @@
   font-size: 1.4rem; /* slightly bigger */
   color: #ecf0f1;
 }
+
+@media (max-width: 768px) {
+  .map-wins-container {
+    padding: 16px 10px;
+    gap: 8px;
+  }
+
+  /* Hide the header labels on mobile — not enough room */
+  .map-table-header {
+    display: none;
+  }
+
+  .map-rows {
+    gap: 16px;
+  }
+
+  .map-row {
+    padding: 10px 12px;
+    gap: 0;
+    max-width: 100%;
+  }
+
+  /* Hide overlapping player images on mobile */
+  .map-images {
+    display: none;
+  }
+
+  .map-label {
+    font-size: 0.9rem;
+    width: 36px;
+    margin-right: 10px;
+  }
+
+  .map-team-info {
+    flex: 1;
+  }
+
+  .team-name {
+    font-size: 1.1rem;
+  }
+
+  .team-players {
+    font-size: 0.85rem;
+  }
+
+  .map-logo-info {
+    margin-left: 10px;
+    width: 36px;
+  }
+
+  .map-team-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .map-kills-info {
+    width: 44px;
+    margin-left: 8px;
+  }
+
+  .map-kills {
+    font-size: 1.1rem;
+  }
+}

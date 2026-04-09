@@ -18,7 +18,7 @@ const BRACKET_AREA_WIDTH = 1600;
 const BRACKET_OFFSET_Y = 160;
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 65;
-const DEFAULT_TEAM_LOGO = "/vite.svg";
+const DEFAULT_TEAM_LOGO = null;
 
 const QUALIFIER_NODE_TOURNEY_LOOKUPS = [
   { nodeId: "s1", round: 1, lobby: 1 },
@@ -1018,7 +1018,7 @@ function PCLSeason1QualifiersPage({
                           <p className="qp-node-winner">{item.winner}</p>
                         </div>
                         <div className="qp-node-logo-wrap">
-                          <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />
+                          {item.logo && <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />}
                         </div>
                       </div>
                     )}
@@ -1119,7 +1119,7 @@ function PCLSeason1QualifiersPage({
                       <p className="qp-node-winner">{item.winner}</p>
                     </div>
                     <div className="qp-node-logo-wrap">
-                      <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />
+                      {item.logo && <img className="qp-node-logo" src={item.logo} alt="" onError={handleNodeLogoError} />}
                     </div>
                   </div>
                   {item.tournamentId && hoveredNodeId === item.id ? (
@@ -1194,15 +1194,15 @@ function PCLSeason1QualifiersPage({
               <div className="qp-finals-mvp-card">
                 <img
                   className="qp-finals-mvp-image"
-                  src={DEFAULT_PLAYER_IMAGE}
-                  alt="TBD"
+                  src={getPlayerImage("Gromalok")}
+                  alt="Gromalok"
                   onError={(event) => {
                     event.currentTarget.onerror = null;
                     event.currentTarget.src = DEFAULT_PLAYER_IMAGE;
                   }}
                 />
                 <p className="qp-finals-mvp-text">
-                  <span>TBD</span>
+                  <span>Gromalok</span>
                   <span>TOURNEY MVP</span>
                 </p>
               </div>
@@ -1224,7 +1224,7 @@ function PCLSeason1QualifiersPage({
                     <p className="qp-node-winner">{finalsNodeData.winner}</p>
                   </div>
                   <div className="qp-node-logo-wrap">
-                    <img className="qp-node-logo" src={finalsNodeData.logo} alt="" onError={handleNodeLogoError} />
+                    {finalsNodeData.logo && <img className="qp-node-logo" src={finalsNodeData.logo} alt="" onError={handleNodeLogoError} />}
                   </div>
                 </div>
                 {finalsNodeData.tournamentId && hoveredNodeId === "finals-node" ? (
