@@ -12,6 +12,8 @@ import PCLSeason1QualifiersPage from './pages/Major Tournament Pages/PCLSeason1Q
 import PCLSeason2Finals from './pages/Major Tournament Pages/PCLSeason2Finals'
 import PCLSeason2GroupStages from './pages/Major Tournament Pages/PCLSeason2GroupStages'
 import PCLSeason2QualifiersPage from './pages/Major Tournament Pages/PCLSeason2QualifiersPage'
+import DreamHackBirminghamPage from './pages/Major Tournament Pages/DreamHackBirminghamPage'
+import DreamHackAtlantaPage from './pages/Major Tournament Pages/DreamHackAtlantaPage'
 import AdminTournaments from './pages/AdminTournaments'
 import StandaloneTierListPage from './pages/StandaloneTierListPage'
 import './App.css'
@@ -150,6 +152,8 @@ function AppShell() {
           <Route path="/pcl-season-2/:id/qualifiers" element={<PCLSeason2QualifiersPage />} />
           <Route path="/pcl-season-2/:id/finals" element={<PCLSeason2Finals />} />
           <Route path="/pcl-season-2/:id/GroupStages" element={<PCLSeason2GroupStages />} />
+          <Route path="/dreamhack/birmingham" element={<DreamHackBirminghamPage />} />
+          <Route path="/dreamhack/atlanta" element={<DreamHackAtlantaPage />} />
         </Routes>
       </main>
     </div>

@@ -140,6 +140,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
+  align-items: start;
 }
 
 @media (max-width: 1020px) {
@@ -151,6 +152,29 @@
 @media (max-width: 680px) {
   .category-cards-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Major cards span the full grid width in their own 2-col row */
+.major-cards-row {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.major-cards-row__row {
+  display: flex;
+  gap: 18px;
+}
+
+.major-cards-row__row > .category-card {
+  flex: 1;
+}
+
+@media (max-width: 680px) {
+  .major-cards-row__row {
+    flex-direction: column;
   }
 }
 

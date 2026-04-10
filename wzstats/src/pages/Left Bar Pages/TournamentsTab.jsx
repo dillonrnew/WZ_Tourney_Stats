@@ -65,6 +65,16 @@ function Home() {
       { id: 2, title: "Group Stages", to: "/pcl-season-2/db57b67e-95ca-4c39-ae16-b7da5460d1b7/GroupStages" },
       { id: 3, title: "Finals", to: "/pcl-season-2/db57b67e-95ca-4c39-ae16-b7da5460d1b7/finals" },
     ],
+    "dreamhack-birmingham": [
+      { id: 1, title: "NA",  to: "/dreamhack/birmingham?section=na"  },
+      { id: 2, title: "LAN", to: "/dreamhack/birmingham?section=lan" },
+      { id: 3, title: "EU",  to: "/dreamhack/birmingham?section=eu"  },
+    ],
+    "dreamhack-atlanta": [
+      { id: 1, title: "NA",  to: "/dreamhack/atlanta?section=na"  },
+      { id: 2, title: "LAN", to: "/dreamhack/atlanta?section=lan" },
+      { id: 3, title: "EU",  to: "/dreamhack/atlanta?section=eu"  },
+    ],
   };
 
   const funTournies = [
@@ -157,18 +167,36 @@ function Home() {
 
         {selectedCategories.length > 0 ? (
           <div className="category-cards-grid">
-            {selectedCategories.includes("major") &&
-              majorTournaments.map((tournament) => (
-                <div
-                  key={`major-${tournament.id}`}
-                  className="category-card category-card--major"
-                >
-                  <TournamentCard
-                    tournament={tournament}
-                    items={majorTournamentItems[tournament.id] || []}
-                  />
+            {selectedCategories.includes("major") && (() => {
+              const cols = majorTournaments.length <= 3
+                ? majorTournaments.length
+                : majorTournaments.length === 4
+                ? 2
+                : 3;
+              const rows = [];
+              for (let i = 0; i < majorTournaments.length; i += cols) {
+                rows.push(majorTournaments.slice(i, i + cols));
+              }
+              return (
+                <div className="major-cards-row">
+                  {rows.map((row, rowIdx) => (
+                    <div key={rowIdx} className="major-cards-row__row">
+                      {row.map((tournament) => (
+                        <div
+                          key={`major-${tournament.id}`}
+                          className="category-card category-card--major"
+                        >
+                          <TournamentCard
+                            tournament={tournament}
+                            items={majorTournamentItems[tournament.id] || []}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              );
+            })()}
 
             {selectedCategories.includes("scrims") && isLoadingScrims ? (
               <div className="category-card category-card--scrims">
